@@ -1,0 +1,78 @@
+{
+    "organizer": {
+        "id": 1,
+        "name": "Tech Club",
+        "email": "techclub@campusconnect.com"
+    },
+    "statistics": {
+        "totalEvents": 8,
+        "upcomingEvents": 5,
+        "totalRegistrations": 247,
+        "averageAttendance": 78
+    },
+    "events": [
+        {
+            "id": 1,
+            "title": "Introduction to Artificial Intelligence",
+            "description": "A beginner-friendly workshop covering the fundamentals of artificial intelligence and machine learning.",
+            "category": {
+                "id": 1,
+                "name": "Technology"
+            },
+            "venue": {
+                "id": 1,
+                "name": "Computer Science Lab 1"
+            },
+            "startDate": "2026-09-15T10:00:00",
+            "endDate": "2026-09-15T13:00:00",
+            "registrationDeadline": "2026-09-14T23:59:59",
+            "capacity": 100,
+            "registeredCount": 67,
+            "visibility": "PUBLIC",
+            "status": "APPROVED",
+            "image": "https://placehold.co/600x400?text=AI+Workshop"
+        },
+        {
+            "id": 2,
+            "title": "Web Development Bootcamp",
+            "description": "A hands-on workshop covering React, Node.js and REST API development.",
+            "category": {
+                "id": 2,
+                "name": "Web Development"
+            },
+            "venue": {
+                "id": 2,
+                "name": "Innovation Hall"
+            },
+            "startDate": "2026-09-20T09:00:00",
+            "endDate": "2026-09-20T17:00:00",
+            "registrationDeadline": "2026-09-19T23:59:59",
+            "capacity": 50,
+            "registeredCount": 42,
+            "visibility": "COLLEGE_ONLY",
+            "status": "APPROVED",
+            "image": "https://placehold.co/600x400?text=Web+Development"
+        },
+        {
+            "id": 3,
+            "title": "Competitive Programming Contest",
+            "description": "Test your problem-solving and programming skills in a timed competitive programming contest.",
+            "category": {
+                "id": 2,
+                "name": "Web Development"
+            },
+            "venue": {
+                "id": 8,
+                "name": "Computer Lab 2"
+            },
+            "startDate": "2026-10-25T09:00:00",
+            "endDate": "2026-10-25T13:00:00",
+            "registrationDeadline": "2026-10-24T23:59:59",
+            "capacity": 100,
+            "registeredCount": 91,
+            "visibility": "COLLEGE_ONLY",
+            "status": "APPROVED",
+            "image": "https://placehold.co/600x400?text=Programming+Contest"
+        }
+    ]
+}

@@ -1,0 +1,118 @@
+{
+    "admin": {
+        "id": 1,
+        "name": "CampusConnect Admin",
+        "email": "admin@campusconnect.com",
+        "role": "ADMIN"
+    },
+    "statistics": {
+        "totalUsers": 1248,
+        "totalEvents": 86,
+        "pendingEvents": 12,
+        "totalRegistrations": 4823,
+        "totalOrganizers": 34
+    },
+    "pendingEvents": [
+        {
+            "id": 101,
+            "title": "AI and the Future of Work",
+            "description": "A discussion about artificial intelligence and its impact on future careers.",
+            "category": {
+                "id": 1,
+                "name": "Technology"
+            },
+            "organizer": {
+                "id": 11,
+                "name": "AI Club"
+            },
+            "venue": {
+                "id": 1,
+                "name": "Main Auditorium"
+            },
+            "startDate": "2026-12-05T10:00:00",
+            "endDate": "2026-12-05T13:00:00",
+            "capacity": 200,
+            "visibility": "PUBLIC",
+            "status": "PENDING",
+            "image": "https://placehold.co/600x400?text=AI+Future"
+        },
+        {
+            "id": 102,
+            "title": "Photography Masterclass",
+            "description": "An advanced photography session conducted by professional photographers.",
+            "category": {
+                "id": 3,
+                "name": "Arts"
+            },
+            "organizer": {
+                "id": 12,
+                "name": "Photography Club"
+            },
+            "venue": {
+                "id": 2,
+                "name": "Creative Arts Hall"
+            },
+            "startDate": "2026-12-08T14:00:00",
+            "endDate": "2026-12-08T17:00:00",
+            "capacity": 50,
+            "visibility": "COLLEGE_ONLY",
+            "status": "PENDING",
+            "image": "https://placehold.co/600x400?text=Photography"
+        },
+        {
+            "id": 103,
+            "title": "Startup Pitch Competition",
+            "description": "Students present their startup ideas to a panel of judges.",
+            "category": {
+                "id": 4,
+                "name": "Business"
+            },
+            "organizer": {
+                "id": 13,
+                "name": "Entrepreneurship Club"
+            },
+            "venue": {
+                "id": 3,
+                "name": "Innovation Center"
+            },
+            "startDate": "2026-12-12T09:00:00",
+            "endDate": "2026-12-12T18:00:00",
+            "capacity": 100,
+            "visibility": "PUBLIC",
+            "status": "PENDING",
+            "image": "https://placehold.co/600x400?text=Startup"
+        }
+    ],
+    "events": [
+        {
+            "id": 1,
+            "title": "Introduction to Artificial Intelligence",
+            "organizer": "Tech Club",
+            "category": "Technology",
+            "date": "2026-09-15",
+            "capacity": 100,
+            "registrations": 67,
+            "status": "APPROVED"
+        },
+        {
+            "id": 2,
+            "title": "Web Development Bootcamp",
+            "organizer": "Coding Club",
+            "category": "Web Development",
+            "date": "2026-09-20",
+            "capacity": 50,
+            "registrations": 42,
+            "status": "APPROVED"
+        },
+        {
+            "id": 3,
+            "title": "Photography Walk",
+            "organizer": "Photography Club",
+            "category": "Arts",
+            "date": "2026-09-25",
+            "capacity": 30,
+            "registrations": 12,
+            "status": "APPROVED"
+        }
+    ]
+}

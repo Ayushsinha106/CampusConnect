@@ -1,0 +1,375 @@
+[
+    {
+        "id": 1,
+        "title": "Introduction to Artificial Intelligence",
+        "description": "A beginner-friendly workshop covering the fundamentals of artificial intelligence and machine learning.",
+        "tags": [
+            "AI",
+            "Artificial Intelligence",
+            "Machine Learning",
+            "Deep Learning"
+        ],
+        "category": {
+            "id": 1,
+            "name": "Technology"
+        },
+        "venue": {
+            "id": 1,
+            "name": "Computer Science Lab 1"
+        },
+        "organizer": {
+            "id": 1,
+            "name": "Tech Club"
+        },
+        "startDate": "2026-09-15T10:00:00",
+        "endDate": "2026-09-15T13:00:00",
+        "registrationDeadline": "2026-09-14T23:59:59",
+        "capacity": 100,
+        "registeredCount": 67,
+        "image": "https://placehold.co/600x400?text=AI+Workshop",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 2,
+        "title": "Web Development Bootcamp",
+        "description": "A hands-on workshop covering React, Node.js and REST API development.",
+        "tags": [
+            "React",
+            "JavaScript",
+            "Node.js",
+            "Web Development"
+        ],
+        "category": {
+            "id": 2,
+            "name": "Web Development"
+        },
+        "venue": {
+            "id": 2,
+            "name": "Innovation Hall"
+        },
+        "organizer": {
+            "id": 2,
+            "name": "Coding Club"
+        },
+        "startDate": "2026-09-20T09:00:00",
+        "endDate": "2026-09-20T17:00:00",
+        "registrationDeadline": "2026-09-19T23:59:59",
+        "capacity": 50,
+        "registeredCount": 42,
+        "image": "https://placehold.co/600x400?text=Web+Development",
+        "visibility": "COLLEGE_ONLY",
+        "status": "APPROVED"
+    },
+    {
+        "id": 3,
+        "title": "Photography Walk",
+        "description": "Join fellow photography enthusiasts for a campus photography walk and practical session.",
+        "tags": [
+            "Photography",
+            "Camera",
+            "Creative",
+            "Outdoor"
+        ],
+        "category": {
+            "id": 3,
+            "name": "Arts"
+        },
+        "venue": {
+            "id": 3,
+            "name": "Main Campus"
+        },
+        "organizer": {
+            "id": 3,
+            "name": "Photography Club"
+        },
+        "startDate": "2026-09-25T15:00:00",
+        "endDate": "2026-09-25T18:00:00",
+        "registrationDeadline": "2026-09-24T23:59:59",
+        "capacity": 30,
+        "registeredCount": 12,
+        "image": "https://placehold.co/600x400?text=Photography+Walk",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 4,
+        "title": "Data Science with Python",
+        "description": "Learn the foundations of data analysis, visualization, and machine learning using Python.",
+        "tags": [
+            "Python",
+            "Data Science",
+            "Machine Learning",
+            "Pandas"
+        ],
+        "category": {
+            "id": 1,
+            "name": "Technology"
+        },
+        "venue": {
+            "id": 4,
+            "name": "Data Science Lab"
+        },
+        "organizer": {
+            "id": 4,
+            "name": "Data Science Club"
+        },
+        "startDate": "2026-10-02T10:00:00",
+        "endDate": "2026-10-02T15:00:00",
+        "registrationDeadline": "2026-10-01T23:59:59",
+        "capacity": 80,
+        "registeredCount": 55,
+        "image": "https://placehold.co/600x400?text=Data+Science",
+        "visibility": "COLLEGE_ONLY",
+        "status": "APPROVED"
+    },
+    {
+        "id": 5,
+        "title": "Cybersecurity Awareness Workshop",
+        "description": "An introductory session on online security, password safety, phishing, and common cyber threats.",
+        "tags": [
+            "Cybersecurity",
+            "Security",
+            "Privacy",
+            "Networking"
+        ],
+        "category": {
+            "id": 1,
+            "name": "Technology"
+        },
+        "venue": {
+            "id": 5,
+            "name": "Seminar Hall"
+        },
+        "organizer": {
+            "id": 5,
+            "name": "Cyber Security Club"
+        },
+        "startDate": "2026-10-08T11:00:00",
+        "endDate": "2026-10-08T14:00:00",
+        "registrationDeadline": "2026-10-07T23:59:59",
+        "capacity": 120,
+        "registeredCount": 76,
+        "image": "https://placehold.co/600x400?text=Cybersecurity",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 6,
+        "title": "Campus Photography Exhibition",
+        "description": "An exhibition showcasing photographs created by students and local photography enthusiasts.",
+        "tags": [
+            "Photography",
+            "Exhibition",
+            "Art",
+            "Creative"
+        ],
+        "category": {
+            "id": 3,
+            "name": "Arts"
+        },
+        "venue": {
+            "id": 6,
+            "name": "Student Activity Center"
+        },
+        "organizer": {
+            "id": 3,
+            "name": "Photography Club"
+        },
+        "startDate": "2026-10-12T10:00:00",
+        "endDate": "2026-10-12T18:00:00",
+        "registrationDeadline": "2026-10-11T23:59:59",
+        "capacity": 200,
+        "registeredCount": 89,
+        "image": "https://placehold.co/600x400?text=Photo+Exhibition",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 7,
+        "title": "Entrepreneurship and Startup Meetup",
+        "description": "Meet student entrepreneurs, founders, and startup enthusiasts to discuss ideas and innovation.",
+        "tags": [
+            "Startup",
+            "Entrepreneurship",
+            "Business",
+            "Innovation"
+        ],
+        "category": {
+            "id": 4,
+            "name": "Business"
+        },
+        "venue": {
+            "id": 7,
+            "name": "Innovation Center"
+        },
+        "organizer": {
+            "id": 6,
+            "name": "Entrepreneurship Club"
+        },
+        "startDate": "2026-10-18T14:00:00",
+        "endDate": "2026-10-18T17:00:00",
+        "registrationDeadline": "2026-10-17T23:59:59",
+        "capacity": 70,
+        "registeredCount": 38,
+        "image": "https://placehold.co/600x400?text=Startup+Meetup",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 8,
+        "title": "Competitive Programming Contest",
+        "description": "Test your problem-solving and programming skills in a timed competitive programming contest.",
+        "tags": [
+            "Programming",
+            "Competitive Programming",
+            "Algorithms",
+            "Coding"
+        ],
+        "category": {
+            "id": 2,
+            "name": "Web Development"
+        },
+        "venue": {
+            "id": 8,
+            "name": "Computer Lab 2"
+        },
+        "organizer": {
+            "id": 2,
+            "name": "Coding Club"
+        },
+        "startDate": "2026-10-25T09:00:00",
+        "endDate": "2026-10-25T13:00:00",
+        "registrationDeadline": "2026-10-24T23:59:59",
+        "capacity": 100,
+        "registeredCount": 91,
+        "image": "https://placehold.co/600x400?text=Programming+Contest",
+        "visibility": "COLLEGE_ONLY",
+        "status": "APPROVED"
+    },
+    {
+        "id": 9,
+        "title": "Mental Wellness and Stress Management",
+        "description": "A practical session discussing stress management, study-life balance, and healthy routines.",
+        "tags": [
+            "Wellness",
+            "Mental Health",
+            "Stress Management",
+            "Lifestyle"
+        ],
+        "category": {
+            "id": 5,
+            "name": "Wellness"
+        },
+        "venue": {
+            "id": 9,
+            "name": "Auditorium"
+        },
+        "organizer": {
+            "id": 7,
+            "name": "Student Wellness Cell"
+        },
+        "startDate": "2026-11-01T11:00:00",
+        "endDate": "2026-11-01T13:00:00",
+        "registrationDeadline": "2026-10-31T23:59:59",
+        "capacity": 150,
+        "registeredCount": 63,
+        "image": "https://placehold.co/600x400?text=Wellness",
+        "visibility": "COLLEGE_ONLY",
+        "status": "APPROVED"
+    },
+    {
+        "id": 10,
+        "title": "Film Screening and Discussion",
+        "description": "A community film screening followed by an open discussion about storytelling and cinema.",
+        "tags": [
+            "Film",
+            "Cinema",
+            "Discussion",
+            "Storytelling"
+        ],
+        "category": {
+            "id": 6,
+            "name": "Entertainment"
+        },
+        "venue": {
+            "id": 10,
+            "name": "Open Air Theatre"
+        },
+        "organizer": {
+            "id": 8,
+            "name": "Film Club"
+        },
+        "startDate": "2026-11-07T18:00:00",
+        "endDate": "2026-11-07T21:00:00",
+        "registrationDeadline": "2026-11-06T23:59:59",
+        "capacity": 300,
+        "registeredCount": 214,
+        "image": "https://placehold.co/600x400?text=Film+Screening",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    },
+    {
+        "id": 11,
+        "title": "Robotics and Embedded Systems Workshop",
+        "description": "Build a small robotics project while learning about sensors, microcontrollers, and embedded programming.",
+        "tags": [
+            "Robotics",
+            "Arduino",
+            "Embedded Systems",
+            "Electronics"
+        ],
+        "category": {
+            "id": 1,
+            "name": "Technology"
+        },
+        "venue": {
+            "id": 11,
+            "name": "Electronics Lab"
+        },
+        "organizer": {
+            "id": 9,
+            "name": "Robotics Club"
+        },
+        "startDate": "2026-11-15T10:00:00",
+        "endDate": "2026-11-15T16:00:00",
+        "registrationDeadline": "2026-11-14T23:59:59",
+        "capacity": 40,
+        "registeredCount": 36,
+        "image": "https://placehold.co/600x400?text=Robotics",
+        "visibility": "COLLEGE_ONLY",
+        "status": "APPROVED"
+    },
+    {
+        "id": 12,
+        "title": "Annual Cultural Festival",
+        "description": "A celebration featuring music, dance, food, performances, and activities for students and guests.",
+        "tags": [
+            "Culture",
+            "Music",
+            "Dance",
+            "Festival",
+            "Entertainment"
+        ],
+        "category": {
+            "id": 6,
+            "name": "Entertainment"
+        },
+        "venue": {
+            "id": 12,
+            "name": "Main Ground"
+        },
+        "organizer": {
+            "id": 10,
+            "name": "Cultural Committee"
+        },
+        "startDate": "2026-11-22T10:00:00",
+        "endDate": "2026-11-22T20:00:00",
+        "registrationDeadline": "2026-11-21T23:59:59",
+        "capacity": 1000,
+        "registeredCount": 734,
+        "image": "https://placehold.co/600x400?text=Cultural+Festival",
+        "visibility": "PUBLIC",
+        "status": "APPROVED"
+    }
+]
