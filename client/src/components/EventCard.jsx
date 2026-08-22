@@ -1,8 +1,7 @@
 import { Link } from "react-router";
 
 function EventCard({ event }) {
-  const availableSeats = event.capacity - event.registeredCount;
-
+  const availableSeats = event.availableSeats;
   return (
     <div className="col">
       <div className="card event-card shadow-sm">
@@ -36,7 +35,7 @@ function EventCard({ event }) {
 
           <p className="mb-1">
             <strong>Date:</strong>{" "}
-            {new Date(event.startDate).toLocaleDateString()}
+            {new Date(event.startDateTime).toLocaleDateString()}
           </p>
 
           <p className="mb-3">

@@ -25,8 +25,12 @@ function Navbar() {
               Home
             </Link>
 
-            <Link className="nav-link nav-item" to="/events">
-              Events
+            <Link className="nav-link nav-item" to="/register">
+              Register
+            </Link>
+
+            <Link className="nav-link nav-item" to="/login">
+              Login
             </Link>
 
             <Link className="nav-link nav-item" to="/organizer">

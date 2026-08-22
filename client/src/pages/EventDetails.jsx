@@ -9,97 +9,237 @@ function EventDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadEvent() {
-      try {
-        const data = await getEventById(id);
+  const [registering, setRegistering] = useState(false);
+  const [registrationMessage, setRegistrationMessage] = useState("");
+  const [registrationError, setRegistrationError] = useState("");
+  const [registration, setRegistration] = useState(null);
 
-        if (!data) {
-          throw new Error("Event not found");
+  const handleRegister = async () => {
+    const token = localStorage.getItem("token");
+
+    setRegistrationMessage("");
+    setRegistrationError("");
+
+    if (!token) {
+      setRegistrationError("Please login before registering for an event.");
+
+      return;
+    }
+
+    if (event.availableSeats <= 0) {
+      setRegistrationError("This event is currently full.");
+
+      return;
+    }
+
+    try {
+      setRegistering(true);
+
+      const response = await fetch(
+        `http://localhost:5000/api/registrations/events/${event.id}`,
+        {
+          method: "POST",
+
+          headers: {
+            Authorization: `Bearer ${token}`,
+
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Registration failed");
+      }
+
+      setRegistrationMessage(
+        "You have successfully registered for this event!",
+      );
+
+      // Update availability immediately
+      setEvent((previousEvent) => ({
+        ...previousEvent,
+
+        registeredCount: previousEvent.registeredCount + 1,
+
+        occupiedSeats: previousEvent.occupiedSeats + 1,
+
+        availableSeats: Math.max(previousEvent.availableSeats - 1, 0),
+      }));
+    } catch (err) {
+      console.error(err);
+
+      setRegistrationError(err.message || "Unable to register for this event.");
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(`http://localhost:5000/api/events/${id}`);
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to fetch event");
         }
 
-        setEvent(data);
+        setEvent(result.data);
+        setRegistration(result.data);
       } catch (err) {
-        setError(err.message);
+        console.error(err);
+
+        setError(err.message || "Unable to load event");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    loadEvent();
+    fetchEvent();
   }, [id]);
 
   if (loading) {
-    return <p>Loading event...</p>;
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+
+        <p className="mt-3">Loading event...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <main>
-        <h1>Something went wrong</h1>
-        <p>{error}</p>
+      <div className="container py-5">
+        <div className="alert alert-danger">{error}</div>
 
-        <Link to="/events">Back to Events</Link>
-      </main>
+        <Link to="/events" className="btn btn-secondary">
+          Back to Events
+        </Link>
+      </div>
     );
   }
 
-  const availableSeats = event.capacity - event.registeredCount;
-
+  if (!event) {
+    return (
+      <div className="container py-5">
+        <div className="alert alert-info">Event not found.</div>
+      </div>
+    );
+  }
+  console.log("Available Seats:", event);
   return (
-    <main>
-      <Link to="/events">← Back to Events</Link>
+    <div className="container py-5">
+      <div className="row">
+        <div className="col-lg-8">
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="img-fluid rounded mb-4"
+          />
 
-      <img src={event.image} alt={event.title} width="600" />
+          <h1>{event.title}</h1>
 
-      <h1>{event.title}</h1>
+          <p className="text-muted">{event.description}</p>
 
-      <p>{event.description}</p>
+          <hr />
 
-      <hr />
+          <h5>Event Information</h5>
 
-      <h3>Event Information</h3>
+          <p>
+            <strong>Category:</strong> {event.category?.name}
+          </p>
 
-      <p>
-        <strong>Category:</strong> {event.category.name}
-      </p>
+          <p>
+            <strong>Venue:</strong> {event.venue?.name}
+          </p>
 
-      <p>
-        <strong>Venue:</strong> {event.venue.name}
-      </p>
+          <p>
+            <strong>Location:</strong> {event.venue?.location}
+          </p>
 
-      <p>
-        <strong>Organizer:</strong> {event.organizer.name}
-      </p>
+          <p>
+            <strong>Date:</strong>{" "}
+            {new Date(event.startDateTime).toLocaleDateString()}
+          </p>
 
-      <p>
-        <strong>Starts:</strong> {new Date(event.startDate).toLocaleString()}
-      </p>
+          <p>
+            <strong>Time:</strong>{" "}
+            {new Date(event.startDateTime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            {" - "}
+            {new Date(event.endDateTime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
 
-      <p>
-        <strong>Ends:</strong> {new Date(event.endDate).toLocaleString()}
-      </p>
+          <p>
+            <strong>Organizer:</strong> {event.organizer?.name}
+          </p>
+        </div>
 
-      <p>
-        <strong>Registration Deadline:</strong>{" "}
-        {new Date(event.registrationDeadline).toLocaleString()}
-      </p>
+        <div className="col-lg-4">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5>Registration</h5>
 
-      <p>
-        <strong>Capacity:</strong> {event.capacity}
-      </p>
+              <p>
+                <strong>{event.availableSeats}</strong> seats available
+              </p>
 
-      <p>
-        <strong>Available Seats:</strong> {availableSeats}
-      </p>
+              <p>Capacity: {event.capacity}</p>
 
-      <p>
-        <strong>Event Type:</strong>{" "}
-        {event.visibility === "PUBLIC" ? "Public Event" : "College Only"}
-      </p>
+              {event.isPublic && (
+                <span className="badge bg-success mb-3">Public Event</span>
+              )}
 
-      <button>Register for Event</button>
-    </main>
+              {registrationMessage && (
+                <div className="alert alert-success">
+                  <div>{registrationMessage}</div>
+
+                  {event.isPublic && registration && (
+                    <Link
+                      to={`/registrations/${registration.id}/companions`}
+                      className="btn btn-outline-success mt-3"
+                    >
+                      Add Companions
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {registrationError && (
+                <div className="alert alert-danger">{registrationError}</div>
+              )}
+
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleRegister}
+                disabled={registering || event.availableSeats <= 0}
+              >
+                {registering
+                  ? "Registering..."
+                  : event.availableSeats <= 0
+                    ? "Event Full"
+                    : "Register"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

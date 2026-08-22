@@ -12,24 +12,36 @@ function Events() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const eventsPerPage = 2;
+  const eventsPerPage = 5;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadEvents() {
+    const fetchEvents = async () => {
       try {
-        const data = await getEvents();
-        setEvents(data);
+        setLoading(true);
+        setError("");
+
+        const response = await fetch("http://localhost:5000/api/events");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+
+        const result = await response.json();
+
+        setEvents(result.data);
       } catch (err) {
-        setError(err.message);
+        console.error(err);
+
+        setError("Unable to load events. Please try again.");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    loadEvents();
+    fetchEvents();
   }, []);
 
   /*
@@ -122,11 +134,24 @@ function Events() {
   }, [search, category, visibility, sortBy]);
 
   if (loading) {
-    return <p>Loading events...</p>;
-  }
+    return (
+      <div className="container py-5">
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
 
+          <p className="mt-3">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="container py-5">
+        <div className="alert alert-danger">{error}</div>
+      </div>
+    );
   }
 
   return (

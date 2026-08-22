@@ -18,6 +18,16 @@ import type {
   AuthenticatedRequest
 } from "../middleware/authMiddleware.js";
 
+import {
+  Registration,
+  RegistrationStatus
+} from "../entities/Registration.js";
+
+import {
+  Companion
+} from "../entities/Companion.js";
+
+
 
 export async function createEvent(
   req: AuthenticatedRequest,
@@ -529,48 +539,125 @@ export async function getEvents(
     // Availability
     // -------------------------
 
-    let result = events.map(
-      (event) => ({
-        id: event.id,
+   const registrationRepository =
+  AppDataSource.getRepository(Registration);
 
-        title: event.title,
+const companionRepository =
+  AppDataSource.getRepository(Companion);
 
-        description:
-          event.description,
 
-        startDateTime:
-          event.startDateTime,
+let result = await Promise.all(
+  events.map(async (event) => {
 
-        endDateTime:
-          event.endDateTime,
-
-        capacity:
-          event.capacity,
-
-        imageUrl:
-          event.imageUrl,
-
-        isPublic:
-          event.isPublic,
-
-        category: {
-          id: event.category.id,
-          name: event.category.name
-        },
-
-        venue: {
-          id: event.venue.id,
-          name: event.venue.name,
-          location:
-            event.venue.location
-        },
-
-        organizer: {
-          id: event.organizer.id,
-          name: event.organizer.name
+    // Get confirmed registrations
+    const registrations =
+      await registrationRepository.find({
+        where: {
+          eventId: event.id,
+          status: RegistrationStatus.CONFIRMED
         }
-      })
-    );
+      });
+
+    const registeredCount =
+      registrations.length;
+
+    // Get registration IDs
+    const registrationIds =
+      registrations.map(
+        (registration) =>
+          registration.id
+      );
+
+    // Count companions
+    let companionCount = 0;
+
+    if (registrationIds.length > 0) {
+      companionCount =
+        await companionRepository
+          .createQueryBuilder("companion")
+          .where(
+            "companion.registrationId IN (:...ids)",
+            {
+              ids: registrationIds
+            }
+          )
+          .getCount();
+    }
+
+    const occupiedSeats =
+      registeredCount +
+      companionCount;
+
+    const availableSeats =
+      Math.max(
+        event.capacity -
+          occupiedSeats,
+        0
+      );
+
+
+    return {
+      id: event.id,
+
+      title:
+        event.title,
+
+      description:
+        event.description,
+
+      startDateTime:
+        event.startDateTime,
+
+      endDateTime:
+        event.endDateTime,
+
+      capacity:
+        event.capacity,
+
+      // New fields
+      registeredCount,
+
+      companionCount,
+
+      occupiedSeats,
+
+      availableSeats,
+
+      imageUrl:
+        event.imageUrl,
+
+      isPublic:
+        event.isPublic,
+
+      category: {
+        id:
+          event.category.id,
+
+        name:
+          event.category.name
+      },
+
+      venue: {
+        id:
+          event.venue.id,
+
+        name:
+          event.venue.name,
+
+        location:
+          event.venue.location
+      },
+
+      organizer: {
+        id:
+          event.organizer.id,
+
+        name:
+          event.organizer.name
+      }
+    };
+  })
+);
 
 
     // Temporary availability calculation.
@@ -649,6 +736,56 @@ export async function getEventById(
       return;
     }
 
+   const registrationRepository =
+  AppDataSource.getRepository(Registration);
+
+const companionRepository =
+  AppDataSource.getRepository(Companion);
+
+  const registrations =
+      await registrationRepository.find({
+        where: {
+          eventId: event.id,
+          status: RegistrationStatus.CONFIRMED
+        }
+      });
+
+    const registeredCount =
+      registrations.length;
+
+    // Get registration IDs
+    const registrationIds =
+      registrations.map(
+        (registration) =>
+          registration.id
+      );
+
+    // Count companions
+    let companionCount = 0;
+
+    if (registrationIds.length > 0) {
+      companionCount =
+        await companionRepository
+          .createQueryBuilder("companion")
+          .where(
+            "companion.registrationId IN (:...ids)",
+            {
+              ids: registrationIds
+            }
+          )
+          .getCount();
+    }
+        const occupiedSeats =
+      registeredCount +
+      companionCount;
+
+    const availableSeats =
+      Math.max(
+        event.capacity -
+          occupiedSeats,
+        0
+      );
+
     res.json({
       success: true,
       data: {
@@ -673,6 +810,7 @@ export async function getEventById(
 
         isPublic:
           event.isPublic,
+          availableSeats: availableSeats,
 
         category: {
           id: event.category.id,

@@ -4,6 +4,8 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
 
@@ -13,6 +15,7 @@ import CreateEvent from "./pages/organizer/CreateEvent";
 import EditEvent from "./pages/organizer/EditEvent";
 import EventRegistrations from "./pages/organizer/EventRegistrations";
 import Attendance from "./pages/organizer/Attendance";
+import Companions from "./pages/Companions";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageEvents from "./pages/admin/ManageEvents";
@@ -28,6 +31,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetails />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Organizer */}
         <Route path="/organizer" element={<OrganizerDashboard />} />
@@ -41,6 +46,10 @@ function App() {
         <Route
           path="/organizer/events/:id/attendance"
           element={<Attendance />}
+        />
+        <Route
+          path="/registrations/:registrationId/companions"
+          element={<Companions />}
         />
 
         {/* Admin */}
