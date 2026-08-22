@@ -3,6 +3,7 @@ import "dotenv/config";
 import { DataSource } from "typeorm";
 import { User } from "../entities/User.js";
 import { OrganizerRequest } from "../entities/OrganizerRequest.js";
+import { Registration } from "../entities/Registration.js";
 import {
   Category
 } from "../entities/Category.js";
@@ -12,7 +13,8 @@ import {
 import {
   Event
 } from "../entities/Event.js";
-
+import { Companion } from "../entities/Companion.js";
+import { Review } from "../entities/Review.js";
 
 const AppDataSource = new DataSource({
   type: "postgres",
@@ -28,7 +30,7 @@ const AppDataSource = new DataSource({
 
   logging: false,
 
-  entities: [User, OrganizerRequest, Category, Venue, Event]
+  entities: [User, OrganizerRequest, Category, Venue, Event, Registration, Companion, Review]
 });
 
 export default AppDataSource;

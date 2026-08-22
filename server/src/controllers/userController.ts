@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 import AppDataSource from "../config/database.js";
 import { User } from "../entities/User.js";
+import type { AuthenticatedRequest } from "../middleware/authMiddleware.js";
 
 
 export async function getUsers(
@@ -135,6 +136,132 @@ export async function createUser(
     res.status(500).json({
       success: false,
       message: "Failed to create user"
+    });
+  }
+}
+
+export async function getMyProfile(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const userRepository =
+      AppDataSource.getRepository(User);
+
+    const user =
+      await userRepository.findOne({
+        where: {
+          id: req.user!.userId
+        }
+      });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+
+      return;
+    }
+
+    res.json({
+      success: true,
+
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch profile"
+    });
+  }
+}
+
+export async function updateMyProfile(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const {
+      name
+    } = req.body;
+
+    if (
+      name !== undefined &&
+      (
+        typeof name !== "string" ||
+        !name.trim()
+      )
+    ) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Name must be a non-empty string"
+      });
+
+      return;
+    }
+
+    const userRepository =
+      AppDataSource.getRepository(User);
+
+    const user =
+      await userRepository.findOne({
+        where: {
+          id: req.user!.userId
+        }
+      });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+
+      return;
+    }
+
+    if (name !== undefined) {
+      user.name =
+        name.trim();
+    }
+
+    const updatedUser =
+      await userRepository.save(user);
+
+    res.json({
+      success: true,
+      message:
+        "Profile updated successfully",
+
+      data: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        updatedAt:
+          updatedUser.updatedAt
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to update profile"
     });
   }
 }
