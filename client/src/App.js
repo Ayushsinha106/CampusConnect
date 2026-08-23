@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
+import Profile from "./pages/Profile";
 
 import OrganizerDashboard from "./pages/organizer/OrganizerDashboard";
 import MyEvents from "./pages/organizer/MyEvents";
@@ -16,6 +17,7 @@ import EditEvent from "./pages/organizer/EditEvent";
 import EventRegistrations from "./pages/organizer/EventRegistrations";
 import Attendance from "./pages/organizer/Attendance";
 import Companions from "./pages/Companions";
+import Review from "./pages/Review";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageEvents from "./pages/admin/ManageEvents";
@@ -33,16 +35,13 @@ function App() {
         <Route path="/events/:id" element={<EventDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/events/:eventId/review" element={<Review />} />
         {/* Organizer */}
         <Route path="/organizer" element={<OrganizerDashboard />} />
         <Route path="/organizer/events" element={<MyEvents />} />
         <Route path="/organizer/events/create" element={<CreateEvent />} />
         <Route path="/organizer/events/:id/edit" element={<EditEvent />} />
-        <Route
-          path="/organizer/events/:id/registrations"
-          element={<EventRegistrations />}
-        />
         <Route
           path="/organizer/events/:id/attendance"
           element={<Attendance />}
@@ -50,6 +49,10 @@ function App() {
         <Route
           path="/registrations/:registrationId/companions"
           element={<Companions />}
+        />
+        <Route
+          path="/organizer/events/:eventId/registrations"
+          element={<EventRegistrations />}
         />
 
         {/* Admin */}

@@ -4,7 +4,8 @@ import {
   getUsers,
   createUser,
   getMyProfile,
-  updateMyProfile
+  updateMyProfile,
+  getMyRegistrations,
 } from "../controllers/userController.js";
 
 import { authenticateToken } from "../middleware/authMiddleware.js";
@@ -24,6 +25,12 @@ router.patch(
   "/me",
   authenticateToken,
   updateMyProfile
+);
+
+router.get(
+  "/me/registrations",
+  authenticateToken,
+  getMyRegistrations
 );
 
 export default router;

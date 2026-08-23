@@ -9,6 +9,7 @@ import eventRoutes from "./routes/eventRoutes.js";
 import registrationRoutes from "./routes/registrationRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import organizerRoutes from "./routes/organizerRoutes.js";
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use("/api/events", eventRoutes);
 app.use("/api/registrations", registrationRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/organizer", organizerRoutes);
 
 export default app;

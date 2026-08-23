@@ -6,7 +6,7 @@ function EventCard({ event }) {
     <div className="col">
       <div className="card event-card shadow-sm">
         <img
-          src={event.image}
+          src={event.imageUrl}
           className="card-img-top event-image"
           alt={event.title}
         />

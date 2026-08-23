@@ -22,239 +22,239 @@ import type {
 } from "../middleware/authMiddleware.js";
 
 
-export async function createReview(
-  req: AuthenticatedRequest,
-  res: Response
-): Promise<void> {
-  try {
-    const eventId =
-      Number(req.params.eventId);
+// export async function createReview(
+//   req: AuthenticatedRequest,
+//   res: Response
+// ): Promise<void> {
+//   try {
+//     const eventId =
+//       Number(req.params.eventId);
 
-    if (
-      !Number.isInteger(eventId) ||
-      eventId <= 0
-    ) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid event ID"
-      });
+//     if (
+//       !Number.isInteger(eventId) ||
+//       eventId <= 0
+//     ) {
+//       res.status(400).json({
+//         success: false,
+//         message: "Invalid event ID"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    const {
-      rating,
-      comment
-    } = req.body;
+//     const {
+//       rating,
+//       comment
+//     } = req.body;
 
-    const numericRating =
-      Number(rating);
+//     const numericRating =
+//       Number(rating);
 
-    // -------------------------
-    // Validate rating
-    // -------------------------
+//     // -------------------------
+//     // Validate rating
+//     // -------------------------
 
-    if (
-      !Number.isInteger(numericRating) ||
-      numericRating < 1 ||
-      numericRating > 5
-    ) {
-      res.status(400).json({
-        success: false,
-        message:
-          "Rating must be an integer between 1 and 5"
-      });
+//     if (
+//       !Number.isInteger(numericRating) ||
+//       numericRating < 1 ||
+//       numericRating > 5
+//     ) {
+//       res.status(400).json({
+//         success: false,
+//         message:
+//           "Rating must be an integer between 1 and 5"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Repositories
-    // -------------------------
+//     // -------------------------
+//     // Repositories
+//     // -------------------------
 
-    const eventRepository =
-      AppDataSource.getRepository(Event);
+//     const eventRepository =
+//       AppDataSource.getRepository(Event);
 
-    const registrationRepository =
-      AppDataSource.getRepository(
-        Registration
-      );
+//     const registrationRepository =
+//       AppDataSource.getRepository(
+//         Registration
+//       );
 
-    const reviewRepository =
-      AppDataSource.getRepository(Review);
+//     const reviewRepository =
+//       AppDataSource.getRepository(Review);
 
-    // -------------------------
-    // Find event
-    // -------------------------
+//     // -------------------------
+//     // Find event
+//     // -------------------------
 
-    const event =
-      await eventRepository.findOne({
-        where: {
-          id: eventId
-        }
-      });
+//     const event =
+//       await eventRepository.findOne({
+//         where: {
+//           id: eventId
+//         }
+//       });
 
-    if (!event) {
-      res.status(404).json({
-        success: false,
-        message: "Event not found"
-      });
+//     if (!event) {
+//       res.status(404).json({
+//         success: false,
+//         message: "Event not found"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Event must be finished
-    // -------------------------
+//     // -------------------------
+//     // Event must be finished
+//     // -------------------------
 
-    if (
-      event.endDateTime > new Date()
-    ) {
-      res.status(400).json({
-        success: false,
-        message:
-          "You can review an event only after it has ended"
-      });
+//     if (
+//       event.endDateTime > new Date()
+//     ) {
+//       res.status(400).json({
+//         success: false,
+//         message:
+//           "You can review an event only after it has ended"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Check registration
-    // -------------------------
+//     // -------------------------
+//     // Check registration
+//     // -------------------------
 
-    const registration =
-      await registrationRepository.findOne({
-        where: {
-          eventId,
-          studentId:
-            req.user!.userId
-        }
-      });
+//     const registration =
+//       await registrationRepository.findOne({
+//         where: {
+//           eventId,
+//           studentId:
+//             req.user!.userId
+//         }
+//       });
 
-    if (!registration) {
-      res.status(403).json({
-        success: false,
-        message:
-          "You must be registered for this event to review it"
-      });
+//     if (!registration) {
+//       res.status(403).json({
+//         success: false,
+//         message:
+//           "You must be registered for this event to review it"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Check registration status
-    // -------------------------
+//     // -------------------------
+//     // Check registration status
+//     // -------------------------
 
-    if (
-      registration.status !==
-      RegistrationStatus.CONFIRMED
-    ) {
-      res.status(403).json({
-        success: false,
-        message:
-          "Cancelled registrations cannot submit reviews"
-      });
+//     if (
+//       registration.status !==
+//       RegistrationStatus.CONFIRMED
+//     ) {
+//       res.status(403).json({
+//         success: false,
+//         message:
+//           "Cancelled registrations cannot submit reviews"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Check attendance
-    // -------------------------
+//     // -------------------------
+//     // Check attendance
+//     // -------------------------
 
-    if (!registration.attended) {
-      res.status(403).json({
-        success: false,
-        message:
-          "You must attend the event before submitting a review"
-      });
+//     if (!registration.attended) {
+//       res.status(403).json({
+//         success: false,
+//         message:
+//           "You must attend the event before submitting a review"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Check existing review
-    // -------------------------
+//     // -------------------------
+//     // Check existing review
+//     // -------------------------
 
-    const existingReview =
-      await reviewRepository.findOne({
-        where: {
-          eventId,
-          studentId:
-            req.user!.userId
-        }
-      });
+//     const existingReview =
+//       await reviewRepository.findOne({
+//         where: {
+//           eventId,
+//           studentId:
+//             req.user!.userId
+//         }
+//       });
 
-    if (existingReview) {
-      res.status(409).json({
-        success: false,
-        message:
-          "You have already reviewed this event"
-      });
+//     if (existingReview) {
+//       res.status(409).json({
+//         success: false,
+//         message:
+//           "You have already reviewed this event"
+//       });
 
-      return;
-    }
+//       return;
+//     }
 
-    // -------------------------
-    // Create review
-    // -------------------------
+//     // -------------------------
+//     // Create review
+//     // -------------------------
 
-    const review =
-      reviewRepository.create({
-        event,
-        eventId,
+//     const review =
+//       reviewRepository.create({
+//         event,
+//         eventId,
 
-        studentId:
-          req.user!.userId,
+//         studentId:
+//           req.user!.userId,
 
-        rating:
-          numericRating,
+//         rating:
+//           numericRating,
 
-        comment:
-          typeof comment === "string" &&
-          comment.trim()
-            ? comment.trim()
-            : null
-      });
+//         comment:
+//           typeof comment === "string" &&
+//           comment.trim()
+//             ? comment.trim()
+//             : null
+//       });
 
-    const savedReview =
-      await reviewRepository.save(
-        review
-      );
+//     const savedReview =
+//       await reviewRepository.save(
+//         review
+//       );
 
-    res.status(201).json({
-      success: true,
-      message:
-        "Review submitted successfully",
+//     res.status(201).json({
+//       success: true,
+//       message:
+//         "Review submitted successfully",
 
-      data: {
-        id: savedReview.id,
+//       data: {
+//         id: savedReview.id,
 
-        eventId:
-          savedReview.eventId,
+//         eventId:
+//           savedReview.eventId,
 
-        rating:
-          savedReview.rating,
+//         rating:
+//           savedReview.rating,
 
-        comment:
-          savedReview.comment,
+//         comment:
+//           savedReview.comment,
 
-        createdAt:
-          savedReview.createdAt
-      }
-    });
+//         createdAt:
+//           savedReview.createdAt
+//       }
+//     });
 
-  } catch (error) {
-    console.error(error);
+//   } catch (error) {
+//     console.error(error);
 
-    res.status(500).json({
-      success: false,
-      message:
-        "Failed to create review"
-    });
-  }
-}
+//     res.status(500).json({
+//       success: false,
+//       message:
+//         "Failed to create review"
+//     });
+//   }
+// }
 
 export async function getEventReviews(
   req: AuthenticatedRequest,
@@ -369,6 +369,161 @@ export async function getEventReviews(
       success: false,
       message:
         "Failed to fetch reviews"
+    });
+  }
+}
+
+
+export async function createReview(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const studentId = req.user!.userId;
+
+    const {
+      eventId,
+      rating,
+      comment
+    } = req.body;
+
+    // -------------------------
+    // Validate input
+    // -------------------------
+
+    if (!eventId || !rating) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Event ID and rating are required"
+      });
+
+      return;
+    }
+
+    const numericRating =
+      Number(rating);
+
+    if (
+      !Number.isInteger(numericRating) ||
+      numericRating < 1 ||
+      numericRating > 5
+    ) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Rating must be between 1 and 5"
+      });
+
+      return;
+    }
+
+
+    const registrationRepository =
+      AppDataSource.getRepository(
+        Registration
+      );
+
+    const reviewRepository =
+      AppDataSource.getRepository(
+        Review
+      );
+
+
+    // -------------------------
+    // Check registration
+    // -------------------------
+
+    const registration =
+      await registrationRepository.findOne({
+        where: {
+          eventId: Number(eventId),
+          studentId,
+          status:
+            RegistrationStatus.CONFIRMED
+        }
+      });
+
+    if (!registration) {
+      res.status(403).json({
+        success: false,
+        message:
+          "You must be registered for this event"
+      });
+
+      return;
+    }
+
+
+    // -------------------------
+    // Check attendance
+    // -------------------------
+
+    if (!registration.attended) {
+      res.status(403).json({
+        success: false,
+        message:
+          "You can review an event only after attending it"
+      });
+
+      return;
+    }
+
+
+    // -------------------------
+    // Check existing review
+    // -------------------------
+
+    const existingReview =
+      await reviewRepository.findOne({
+        where: {
+          eventId: Number(eventId),
+          studentId
+        }
+      });
+
+    if (existingReview) {
+      res.status(409).json({
+        success: false,
+        message:
+          "You have already reviewed this event"
+      });
+
+      return;
+    }
+
+
+    // -------------------------
+    // Create review
+    // -------------------------
+
+    const review =
+      reviewRepository.create({
+        eventId: Number(eventId),
+        studentId,
+        rating: numericRating,
+        comment:
+          comment?.trim() || null
+      });
+
+    const savedReview =
+      await reviewRepository.save(review);
+
+
+    res.status(201).json({
+      success: true,
+      message:
+        "Review submitted successfully",
+      data: savedReview
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to submit review"
     });
   }
 }

@@ -116,7 +116,10 @@ function OrganizerDashboard() {
 
           <div className="row g-3">
             {events.slice(0, 3).map((event) => {
-              const percentage = (event.registeredCount / event.capacity) * 100;
+              const percentage =
+                event.capacity > 0
+                  ? (event.occupiedSeats / event.capacity) * 100
+                  : 0;
 
               return (
                 <div className="col-12" key={event.id}>
@@ -128,7 +131,7 @@ function OrganizerDashboard() {
                         <div className="event-meta">
                           {event.category.name}
                           {" • "}
-                          {new Date(event.startDate).toLocaleDateString()}
+                          {new Date(event.startDateTime).toLocaleDateString()}
                         </div>
                       </div>
 
@@ -148,7 +151,7 @@ function OrganizerDashboard() {
                         <small>Registrations</small>
 
                         <small>
-                          {event.registeredCount} / {event.capacity}
+                          {event.occupiedSeats} / {event.capacity}
                         </small>
                       </div>
 

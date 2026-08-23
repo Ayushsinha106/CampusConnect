@@ -37,8 +37,8 @@ function Navbar() {
               Organizer
             </Link>
 
-            <Link className="nav-link nav-item" to="/admin">
-              Admin
+            <Link className="nav-link nav-item" to="/profile">
+              Profile
             </Link>
           </div>
         </div>

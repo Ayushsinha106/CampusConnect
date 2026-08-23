@@ -49,6 +49,8 @@ function EventDetails() {
       );
 
       const result = await response.json();
+      console.log("Registration response:", result);
+      setRegistration(result.data);
 
       if (!response.ok) {
         throw new Error(result.message || "Registration failed");
@@ -92,7 +94,7 @@ function EventDetails() {
         }
 
         setEvent(result.data);
-        setRegistration(result.data);
+        console.log("registration:", result.data);
       } catch (err) {
         console.error(err);
 

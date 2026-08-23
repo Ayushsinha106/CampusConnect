@@ -30,7 +30,7 @@ router.get(
 
 // Student
 router.post(
-  "/events/:eventId",
+  "/",
   authenticateToken,
   requireRole(UserRole.STUDENT),
   createReview

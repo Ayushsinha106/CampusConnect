@@ -635,47 +635,47 @@ export async function addCompanions(
       );
 
     const confirmedRegistrations =
-  await registrationRepository2.find({
-    where: {
-      eventId:
-        registration.eventId,
+      await registrationRepository2.find({
+        where: {
+          eventId:
+            registration.eventId,
 
-      status:
-        RegistrationStatus.CONFIRMED
-    }
-  });
-
-const confirmedRegistrationIds =
-  confirmedRegistrations.map(
-    (registration) =>
-      registration.id
-  );
-
-let existingCompanionCount = 0;
-
-if (
-  confirmedRegistrationIds.length > 0
-) {
-  existingCompanionCount =
-    await companionRepository
-      .createQueryBuilder("companion")
-      .where(
-        "companion.registrationId IN (:...ids)",
-        {
-          ids:
-            confirmedRegistrationIds
+          status:
+            RegistrationStatus.CONFIRMED
         }
-      )
-      .getCount();
-}
+      });
 
-      const currentTotal =
-        confirmedRegistrations.length +
-        existingCompanionCount;
+    const confirmedRegistrationIds =
+      confirmedRegistrations.map(
+        (registration) =>
+          registration.id
+      );
 
-      const requestedTotal =
-        currentTotal +
-        cleanedNames.length;
+    let existingCompanionCount = 0;
+
+    if (
+      confirmedRegistrationIds.length > 0
+    ) {
+      existingCompanionCount =
+        await companionRepository
+          .createQueryBuilder("companion")
+          .where(
+            "companion.registrationId IN (:...ids)",
+            {
+              ids:
+                confirmedRegistrationIds
+            }
+          )
+          .getCount();
+    }
+
+    const currentTotal =
+      confirmedRegistrations.length +
+      existingCompanionCount;
+
+    const requestedTotal =
+      currentTotal +
+      cleanedNames.length;
 
     if (
       requestedTotal >

@@ -27,6 +27,7 @@ function Companions() {
       );
 
       const result = await response.json();
+      console.log("Companions fetched:", result);
 
       if (!response.ok) {
         throw new Error(result.message || "Failed to fetch companions");

@@ -56,9 +56,9 @@ function MyEvents() {
           </div>
         ) : (
           events.map((event) => {
-            const availableSeats = event.capacity - event.registeredCount;
+            const availableSeats = event.availableSeats;
 
-            const percentage = (event.registeredCount / event.capacity) * 100;
+            const percentage = (event.occupiedSeats / event.capacity) * 100;
 
             return (
               <div className="card management-card" key={event.id}>
@@ -66,7 +66,7 @@ function MyEvents() {
                   <div className="row align-items-center">
                     <div className="col-md-2 mb-3 mb-md-0">
                       <img
-                        src={event.image}
+                        src={event.imageUrl}
                         alt={event.title}
                         className="img-fluid rounded"
                       />
@@ -102,7 +102,7 @@ function MyEvents() {
                           <small>Registrations</small>
 
                           <small>
-                            {event.registeredCount} / {event.capacity}
+                            {event.occupiedSeats} / {event.capacity}
                           </small>
                         </div>
 

@@ -539,125 +539,125 @@ export async function getEvents(
     // Availability
     // -------------------------
 
-   const registrationRepository =
-  AppDataSource.getRepository(Registration);
+    const registrationRepository =
+      AppDataSource.getRepository(Registration);
 
-const companionRepository =
-  AppDataSource.getRepository(Companion);
+    const companionRepository =
+      AppDataSource.getRepository(Companion);
 
 
-let result = await Promise.all(
-  events.map(async (event) => {
+    let result = await Promise.all(
+      events.map(async (event) => {
 
-    // Get confirmed registrations
-    const registrations =
-      await registrationRepository.find({
-        where: {
-          eventId: event.id,
-          status: RegistrationStatus.CONFIRMED
-        }
-      });
-
-    const registeredCount =
-      registrations.length;
-
-    // Get registration IDs
-    const registrationIds =
-      registrations.map(
-        (registration) =>
-          registration.id
-      );
-
-    // Count companions
-    let companionCount = 0;
-
-    if (registrationIds.length > 0) {
-      companionCount =
-        await companionRepository
-          .createQueryBuilder("companion")
-          .where(
-            "companion.registrationId IN (:...ids)",
-            {
-              ids: registrationIds
+        // Get confirmed registrations
+        const registrations =
+          await registrationRepository.find({
+            where: {
+              eventId: event.id,
+              status: RegistrationStatus.CONFIRMED
             }
-          )
-          .getCount();
-    }
+          });
 
-    const occupiedSeats =
-      registeredCount +
-      companionCount;
+        const registeredCount =
+          registrations.length;
 
-    const availableSeats =
-      Math.max(
-        event.capacity -
+        // Get registration IDs
+        const registrationIds =
+          registrations.map(
+            (registration) =>
+              registration.id
+          );
+
+        // Count companions
+        let companionCount = 0;
+
+        if (registrationIds.length > 0) {
+          companionCount =
+            await companionRepository
+              .createQueryBuilder("companion")
+              .where(
+                "companion.registrationId IN (:...ids)",
+                {
+                  ids: registrationIds
+                }
+              )
+              .getCount();
+        }
+
+        const occupiedSeats =
+          registeredCount +
+          companionCount;
+
+        const availableSeats =
+          Math.max(
+            event.capacity -
+            occupiedSeats,
+            0
+          );
+
+
+        return {
+          id: event.id,
+
+          title:
+            event.title,
+
+          description:
+            event.description,
+
+          startDateTime:
+            event.startDateTime,
+
+          endDateTime:
+            event.endDateTime,
+
+          capacity:
+            event.capacity,
+
+          // New fields
+          registeredCount,
+
+          companionCount,
+
           occupiedSeats,
-        0
-      );
 
+          availableSeats,
 
-    return {
-      id: event.id,
+          imageUrl:
+            event.imageUrl,
 
-      title:
-        event.title,
+          isPublic:
+            event.isPublic,
 
-      description:
-        event.description,
+          category: {
+            id:
+              event.category.id,
 
-      startDateTime:
-        event.startDateTime,
+            name:
+              event.category.name
+          },
 
-      endDateTime:
-        event.endDateTime,
+          venue: {
+            id:
+              event.venue.id,
 
-      capacity:
-        event.capacity,
+            name:
+              event.venue.name,
 
-      // New fields
-      registeredCount,
+            location:
+              event.venue.location
+          },
 
-      companionCount,
+          organizer: {
+            id:
+              event.organizer.id,
 
-      occupiedSeats,
-
-      availableSeats,
-
-      imageUrl:
-        event.imageUrl,
-
-      isPublic:
-        event.isPublic,
-
-      category: {
-        id:
-          event.category.id,
-
-        name:
-          event.category.name
-      },
-
-      venue: {
-        id:
-          event.venue.id,
-
-        name:
-          event.venue.name,
-
-        location:
-          event.venue.location
-      },
-
-      organizer: {
-        id:
-          event.organizer.id,
-
-        name:
-          event.organizer.name
-      }
-    };
-  })
-);
+            name:
+              event.organizer.name
+          }
+        };
+      })
+    );
 
 
     // Temporary availability calculation.
@@ -736,13 +736,13 @@ export async function getEventById(
       return;
     }
 
-   const registrationRepository =
-  AppDataSource.getRepository(Registration);
+    const registrationRepository =
+      AppDataSource.getRepository(Registration);
 
-const companionRepository =
-  AppDataSource.getRepository(Companion);
+    const companionRepository =
+      AppDataSource.getRepository(Companion);
 
-  const registrations =
+    const registrations =
       await registrationRepository.find({
         where: {
           eventId: event.id,
@@ -775,14 +775,14 @@ const companionRepository =
           )
           .getCount();
     }
-        const occupiedSeats =
+    const occupiedSeats =
       registeredCount +
       companionCount;
 
     const availableSeats =
       Math.max(
         event.capacity -
-          occupiedSeats,
+        occupiedSeats,
         0
       );
 
@@ -810,7 +810,7 @@ const companionRepository =
 
         isPublic:
           event.isPublic,
-          availableSeats: availableSeats,
+        availableSeats: availableSeats,
 
         category: {
           id: event.category.id,

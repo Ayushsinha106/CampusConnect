@@ -1,18 +1,22 @@
 import { useState } from "react";
 import DashboardSidebar from "../../components/DashboardSidebar";
+import { Link, useNavigate } from "react-router-dom";
+
 function CreateEvent() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "",
-    venue: "",
-    startDate: "",
-    endDate: "",
-    registrationDeadline: "",
+    categoryId: "",
+    venueId: "",
+    startDateTime: "",
+    endDateTime: "",
     capacity: "",
-    visibility: "COLLEGE_ONLY",
-    tags: "",
+    imageUrl: "",
+    isPublic: true,
   });
+  const [success, setSuccess] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -23,13 +27,38 @@ function CreateEvent() {
     }));
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     console.log("Event to be created:", formData);
+    const token = localStorage.getItem("token");
 
-    alert("Event creation will be connected to the backend later.");
-  }
+    try {
+      const response = await fetch("http://localhost:5000/api/events/", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      console.log("Event creation response:", result);
+
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/organizer");
+      }, 1500);
+      if (!response.ok) {
+        throw new Error(result.message || "Event creation failed");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="dashboard-layout">
@@ -43,6 +72,8 @@ function CreateEvent() {
 
         <div className="dashboard-section">
           <form onSubmit={handleSubmit}>
+            {/* Event Title */}
+
             <div className="mb-3">
               <label className="form-label">Event Title</label>
 
@@ -52,9 +83,12 @@ function CreateEvent() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                placeholder="Enter event title"
                 required
               />
             </div>
+
+            {/* Description */}
 
             <div className="mb-3">
               <label className="form-label">Description</label>
@@ -65,85 +99,96 @@ function CreateEvent() {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                placeholder="Describe your event..."
                 required
               />
             </div>
+
+            {/* Category */}
 
             <div className="mb-3">
               <label className="form-label">Category</label>
 
               <select
                 className="form-select"
-                name="category"
-                value={formData.category}
+                name="categoryId"
+                value={formData.categoryId}
                 onChange={handleChange}
                 required
               >
                 <option value="">Select Category</option>
 
-                <option value="Technology">Technology</option>
+                {/* Replace these IDs with
+                your actual database IDs */}
 
-                <option value="Arts">Arts</option>
+                <option value="1">Technology</option>
 
-                <option value="Business">Business</option>
+                <option value="2">Arts</option>
 
-                <option value="Wellness">Wellness</option>
+                <option value="3">Business</option>
 
-                <option value="Entertainment">Entertainment</option>
+                <option value="4">Wellness</option>
+
+                <option value="5">Entertainment</option>
               </select>
             </div>
+
+            {/* Venue */}
 
             <div className="mb-3">
               <label className="form-label">Venue</label>
 
-              <input
-                type="text"
-                className="form-control"
-                name="venue"
-                value={formData.venue}
+              <select
+                className="form-select"
+                name="venueId"
+                value={formData.venueId}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Select Venue</option>
+
+                {/* Replace these IDs with
+                your actual database IDs */}
+
+                <option value="1">Seminar Hall</option>
+
+                <option value="2">Auditorium</option>
+
+                <option value="3">Computer Lab</option>
+              </select>
             </div>
 
+            {/* Start Date */}
+
             <div className="mb-3">
-              <label className="form-label">Start Date</label>
+              <label className="form-label">Start Date & Time</label>
 
               <input
                 className="form-control"
                 type="datetime-local"
-                name="startDate"
-                value={formData.startDate}
+                name="startDateTime"
+                value={formData.startDateTime}
                 onChange={handleChange}
                 required
               />
             </div>
 
+            {/* End Date */}
+
             <div className="mb-3">
-              <label className="form-label">End Date</label>
+              <label className="form-label">End Date & Time</label>
 
               <input
                 className="form-control"
                 type="datetime-local"
-                name="endDate"
-                value={formData.endDate}
+                name="endDateTime"
+                value={formData.endDateTime}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Registration Deadline</label>
-
-              <input
-                className="form-control"
-                type="datetime-local"
-                name="registrationDeadline"
-                value={formData.registrationDeadline}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            {/* Capacity */}
 
             <div className="mb-3">
               <label className="form-label">Capacity</label>
@@ -155,37 +200,61 @@ function CreateEvent() {
                 min="1"
                 value={formData.capacity}
                 onChange={handleChange}
+                placeholder="Maximum number of attendees"
                 required
               />
             </div>
+
+            {/* Image URL */}
+
+            <div className="mb-3">
+              <label className="form-label">Image URL</label>
+
+              <input
+                className="form-control"
+                type="url"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/event-image.jpg"
+              />
+
+              <div className="form-text">
+                Enter a publicly accessible URL for the event image.
+              </div>
+            </div>
+
+            {/* Visibility */}
 
             <div className="mb-3">
               <label className="form-label">Visibility</label>
 
               <select
-                name="visibility"
-                value={formData.visibility}
-                onChange={handleChange}
+                name="isPublic"
+                value={formData.isPublic}
+                onChange={(e) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    isPublic: e.target.value === "true",
+                  }))
+                }
                 className="form-select"
               >
-                <option value="COLLEGE_ONLY">College Only</option>
+                <option value="false">College Only</option>
 
-                <option value="PUBLIC">Public</option>
+                <option value="true">Public</option>
               </select>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Tags</label>
+            {/* Submit */}
 
-              <input
-                type="text"
-                name="tags"
-                placeholder="AI, Python, Machine Learning"
-                value={formData.tags}
-                onChange={handleChange}
-                className="form-control"
-              />
-            </div>
+            {success && (
+              <div className="alert alert-success">
+                <div>
+                  Event created successfully! Redirecting to dashboard...
+                </div>
+              </div>
+            )}
 
             <button type="submit" className="btn btn-primary">
               Create Event

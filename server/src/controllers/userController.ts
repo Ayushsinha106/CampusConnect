@@ -4,7 +4,9 @@ import bcrypt from "bcrypt";
 import AppDataSource from "../config/database.js";
 import { User } from "../entities/User.js";
 import type { AuthenticatedRequest } from "../middleware/authMiddleware.js";
-
+import { Registration } from "../entities/Registration.js";
+import { Companion } from "../entities/Companion.js";
+import { Review } from "../entities/Review.js";
 
 export async function getUsers(
   _req: Request,
@@ -262,6 +264,166 @@ export async function updateMyProfile(
       success: false,
       message:
         "Failed to update profile"
+    });
+  }
+}
+
+export async function getMyRegistrations(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const registrationRepository =
+      AppDataSource.getRepository(Registration);
+
+    const companionRepository =
+      AppDataSource.getRepository(Companion);
+
+    const reviewRepository =
+      AppDataSource.getRepository(Review);
+
+    const registrations =
+      await registrationRepository.find({
+        where: {
+          studentId: req.user!.userId
+        },
+
+        relations: {
+          event: {
+            category: true,
+            venue: true,
+            organizer: true
+          }
+        },
+
+        order: {
+          registeredAt: "DESC"
+        }
+      });
+
+
+    const data = await Promise.all(
+      registrations.map(
+        async (registration) => {
+
+          const companions =
+            await companionRepository.find({
+              where: {
+                registrationId:
+                  registration.id
+              },
+
+              order: {
+                id: "ASC"
+              }
+            });
+
+          const review =
+            await reviewRepository.findOne({
+              where: {
+                eventId: registration.eventId,
+                studentId: registration.studentId
+              }
+            });
+
+
+          return {
+            registrationId:
+              registration.id,
+
+            status:
+              registration.status,
+
+            attended:
+              registration.attended,
+
+            registeredAt:
+              registration.registeredAt,
+
+            event: {
+              id:
+                registration.event.id,
+
+              title:
+                registration.event.title,
+
+              description:
+                registration.event.description,
+
+              startDateTime:
+                registration.event.startDateTime,
+
+              endDateTime:
+                registration.event.endDateTime,
+
+              imageUrl:
+                registration.event.imageUrl,
+
+              category: {
+                id:
+                  registration.event.category.id,
+
+                name:
+                  registration.event.category.name
+              },
+
+              venue: {
+                id:
+                  registration.event.venue.id,
+
+                name:
+                  registration.event.venue.name,
+
+                location:
+                  registration.event.venue.location
+              },
+
+              organizer: {
+                id:
+                  registration.event.organizer.id,
+
+                name:
+                  registration.event.organizer.name
+              }
+            },
+
+            review: review
+              ? {
+                id: review.id,
+                rating: review.rating,
+                comment: review.comment,
+                createdAt: review.createdAt
+              }
+              : null,
+
+            companions:
+              companions.map(
+                (companion) => ({
+                  id:
+                    companion.id,
+
+                  name:
+                    companion.name
+                })
+              )
+          };
+        }
+      )
+    );
+
+
+    res.json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch your registrations"
     });
   }
 }
