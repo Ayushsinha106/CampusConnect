@@ -125,23 +125,22 @@ function MyEvents() {
                       <div className="d-grid gap-2">
                         <Link
                           className="btn btn-outline-primary"
-                          to={`/organizer/events/${event.id}/edit`}
+                          to={`/events/${event.id}/edit`}
                         >
                           Edit Event
                         </Link>
 
                         <Link
-                          className="btn btn-outline-secondary"
+                          className="btn btn-outline-dark"
                           to={`/organizer/events/${event.id}/registrations`}
                         >
                           Registrations
                         </Link>
-
                         <Link
-                          className="btn btn-outline-dark"
-                          to={`/organizer/events/${event.id}/attendance`}
+                          to={`/organizer/events/${event.id}/reviews`}
+                          className="btn btn-outline-danger btn-sm"
                         >
-                          Attendance
+                          Reviews
                         </Link>
                       </div>
                     </div>

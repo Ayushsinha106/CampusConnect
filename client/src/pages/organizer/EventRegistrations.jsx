@@ -53,12 +53,32 @@ function EventRegistrations() {
     try {
       setUpdatingId(registrationId);
 
+      // Call backend
       await markAttendance(registrationId, attended);
 
-      // Update UI without
-      // fetching everything again
+      // Update the registration in React state
+      setRegistrations((previous) =>
+        previous.map((registration) =>
+          registration.id === registrationId
+            ? {
+                ...registration,
+                attended: attended,
+              }
+            : registration,
+        ),
+      );
 
-      // Update summary
+      // Update attendance count
+      setSummary((previous) => {
+        if (!previous) {
+          return previous;
+        }
+
+        return {
+          ...previous,
+          attendedStudents: previous.attendedStudents + (attended ? 1 : -1),
+        };
+      });
     } catch (err) {
       console.error(err);
 
@@ -176,6 +196,8 @@ function EventRegistrations() {
 
         {/* Registrations */}
 
+        {/* Registrations */}
+
         <div className="dashboard-section">
           <h2 className="mb-4">Registered Students</h2>
 
@@ -185,77 +207,93 @@ function EventRegistrations() {
             </div>
           ) : (
             <div className="row g-3">
-              <div className="col-12" key={registrations.id}>
-                <div className="card">
-                  <div className="card-body">
-                    {/* Student */}
+              {registrations.map((registration) => (
+                <div className="col-12" key={registration.id}>
+                  <div className="card">
+                    <div className="card-body">
+                      {/* Student */}
 
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div>
-                        <h5 className="mb-1">{registrations.student.name}</h5>
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h5 className="mb-1">{registration.student.name}</h5>
 
-                        <p className="text-muted mb-2">
-                          {registrations.student.email}
-                        </p>
+                          <p className="text-muted mb-2">
+                            {registration.student.email}
+                          </p>
+                        </div>
+
+                        {/* Attendance */}
+
+                        {registration.attended ? (
+                          <span className="badge text-bg-success">
+                            ✓ Attended
+                          </span>
+                        ) : (
+                          <span className="badge text-bg-secondary">
+                            Not Attended
+                          </span>
+                        )}
                       </div>
 
-                      {/* Attendance */}
+                      {/* Registration status */}
 
-                      {registrations.attended ? (
-                        <span className="badge text-bg-success">
-                          ✓ Attended
+                      <div className="mt-2">
+                        <span
+                          className={
+                            registration.status === "CONFIRMED"
+                              ? "badge text-bg-primary"
+                              : "badge text-bg-danger"
+                          }
+                        >
+                          {registration.status}
                         </span>
-                      ) : (
-                        <span className="badge text-bg-secondary">
-                          Not Attended
-                        </span>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* Companions */}
+                      {/* Companions */}
 
-                    <div className="mt-3">
-                      <strong>Companions</strong>
+                      <div className="mt-3">
+                        <strong>Companions</strong>
 
-                      {registrations.companions.length === 0 ? (
-                        <p className="text-muted mb-0">No companions</p>
-                      ) : (
-                        <ul className="mb-0">
-                          {registrations.companions.map((companion) => (
-                            <li key={companion.id}>{companion.name}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
+                        {registration.companions.length === 0 ? (
+                          <p className="text-muted mb-0">No companions</p>
+                        ) : (
+                          <ul className="mb-0">
+                            {registration.companions.map((companion) => (
+                              <li key={companion.id}>{companion.name}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
 
-                    {/* Attendance button */}
+                      {/* Attendance button */}
 
-                    <div className="mt-3">
-                      <button
-                        type="button"
-                        className={
-                          registrations.attended
-                            ? "btn btn-outline-danger"
-                            : "btn btn-success"
-                        }
-                        disabled={updatingId === registrations.id}
-                        onClick={() =>
-                          handleAttendance(
-                            registrations.id,
-                            !registrations.attended,
-                          )
-                        }
-                      >
-                        {updatingId === registrations.id
-                          ? "Updating..."
-                          : registrations.attended
-                            ? "Remove Attendance"
-                            : "Mark Attended"}
-                      </button>
+                      <div className="mt-3">
+                        <button
+                          type="button"
+                          className={
+                            registration.attended
+                              ? "btn btn-outline-danger"
+                              : "btn btn-success"
+                          }
+                          disabled={updatingId === registration.id}
+                          onClick={() =>
+                            handleAttendance(
+                              registration.id,
+                              !registration.attended,
+                            )
+                          }
+                        >
+                          {updatingId === registration.id
+                            ? "Updating..."
+                            : registration.attended
+                              ? "Remove Attendance"
+                              : "Mark Attended"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           )}
         </div>

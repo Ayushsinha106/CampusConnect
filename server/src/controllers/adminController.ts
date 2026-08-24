@@ -288,3 +288,89 @@ export async function getAdminEvents(
     });
   }
 }
+
+export async function updateUserRole(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const userId = Number(req.params.id);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+      return;
+    }
+
+    const { role } = req.body;
+
+    if (
+      role !== UserRole.STUDENT &&
+      role !== UserRole.ORGANIZER
+    ) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Role must be STUDENT or ORGANIZER",
+      });
+      return;
+    }
+
+    const userRepository =
+      AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    // Admins cannot be changed using this endpoint
+    if (user.role === UserRole.ADMIN) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Admin role cannot be changed",
+      });
+      return;
+    }
+
+    user.role = role;
+
+    const updatedUser =
+      await userRepository.save(user);
+
+    res.json({
+      success: true,
+      message:
+        role === UserRole.ORGANIZER
+          ? "User promoted to organizer successfully"
+          : "User changed to student successfully",
+      data: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        updatedAt: updatedUser.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to update user role",
+    });
+  }
+}

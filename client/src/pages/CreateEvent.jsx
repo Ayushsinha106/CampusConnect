@@ -1,97 +1,83 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
-import { getOrganizerEvents } from "../../services/api";
+import DashboardSidebar from "../components/DashboardSidebar";
 
-import DashboardSidebar from "../../components/DashboardSidebar";
+import { createEvent, getCategories, getVenues } from "../services/api";
 
-function EditEvent() {
-  const { id } = useParams();
+function CreateEvent() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    categoryId: "",
+    venueId: "",
+    startDateTime: "",
+    endDateTime: "",
+    capacity: "",
+    imageUrl: "",
+    isPublic: false,
+  });
+
+  const [categories, setCategories] = useState([]);
+
+  const [venues, setVenues] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
+
   const [success, setSuccess] = useState(false);
 
+  const role = JSON.parse(localStorage.getItem("user"))?.role;
+
   // --------------------------------
-  // Load event
+  // Load categories and venues
   // --------------------------------
 
   useEffect(() => {
-    async function loadEvent() {
+    async function loadData() {
       try {
-        const events = await getOrganizerEvents();
+        setLoading(true);
 
-        const event = events.find((item) => item.id === Number(id));
+        const [categoryData, venueData] = await Promise.all([
+          getCategories(),
+          getVenues(),
+        ]);
 
-        if (!event) {
-          throw new Error("Event not found");
-        }
-
-        setFormData({
-          title: event.title,
-
-          description: event.description,
-
-          categoryId: event.category?.id || "",
-
-          venueId: event.venue?.id || "",
-
-          startDateTime: event.startDateTime
-            ? event.startDateTime.slice(0, 16)
-            : "",
-
-          endDateTime: event.endDateTime ? event.endDateTime.slice(0, 16) : "",
-
-          capacity: event.capacity,
-
-          imageUrl: event.imageUrl || "",
-
-          isPublic: event.isPublic,
-        });
+        setCategories(categoryData);
+        setVenues(venueData);
       } catch (err) {
         console.error(err);
 
-        setError(err.message || "Failed to load event");
+        setError(err.message || "Failed to load form data");
       } finally {
         setLoading(false);
       }
     }
 
-    loadEvent();
-  }, [id]);
+    loadData();
+  }, []);
 
   // --------------------------------
-  // Handle input
+  // Form changes
   // --------------------------------
 
   function handleChange(event) {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setFormData((previous) => ({
       ...previous,
-      [name]: value,
+
+      [name]: type === "checkbox" ? checked : value,
     }));
   }
 
   // --------------------------------
-  // Handle visibility
-  // --------------------------------
-
-  function handleVisibilityChange(event) {
-    setFormData((previous) => ({
-      ...previous,
-
-      isPublic: event.target.value === "true",
-    }));
-  }
-
-  // --------------------------------
-  // Submit update
+  // Submit
   // --------------------------------
 
   async function handleSubmit(event) {
@@ -99,107 +85,56 @@ function EditEvent() {
 
     setError("");
     setSuccess(false);
-
     setSaving(true);
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setError("You must be logged in.");
-
-      setSaving(false);
-
-      return;
-    }
-
-    const payload = {
-      title: formData.title,
-
-      description: formData.description,
-
-      startDateTime: formData.startDateTime,
-
-      endDateTime: formData.endDateTime,
-
-      capacity: Number(formData.capacity),
-
-      imageUrl: formData.imageUrl || null,
-
-      isPublic: formData.isPublic,
-
-      categoryId: Number(formData.categoryId),
-
-      venueId: Number(formData.venueId),
-    };
-
     try {
-      const response = await fetch(`http://localhost:5000/api/events/${id}`, {
-        method: "PATCH",
+      const data = {
+        title: formData.title,
+        description: formData.description,
 
-        headers: {
-          "Content-Type": "application/json",
+        categoryId: Number(formData.categoryId),
 
-          Authorization: `Bearer ${token}`,
-        },
+        venueId: Number(formData.venueId),
 
-        body: JSON.stringify(payload),
-      });
+        startDateTime: formData.startDateTime,
 
-      const result = await response.json();
+        endDateTime: formData.endDateTime,
 
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update event");
-      }
+        capacity: Number(formData.capacity),
 
-      console.log("Event update response:", result);
+        imageUrl: formData.imageUrl.trim() || null,
+
+        isPublic: formData.isPublic,
+      };
+
+      await createEvent(data);
 
       setSuccess(true);
 
-      // Redirect after showing message
-
+      const role = JSON.parse(localStorage.getItem("user"))?.role;
       setTimeout(() => {
-        navigate("/organizer/events");
-      }, 2000);
+        if (role === "ADMIN") {
+          navigate("/admin/events");
+        } else {
+          navigate("/organizer/events");
+        }
+      }, 1500);
     } catch (err) {
       console.error(err);
 
-      setError(err.message || "Failed to update event");
+      setError(err.message || "Failed to create event");
     } finally {
       setSaving(false);
     }
   }
 
-  // --------------------------------
-  // Loading
-  // --------------------------------
-
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <DashboardSidebar role="ORGANIZER" />
+        <DashboardSidebar />
 
         <main className="dashboard-content">
-          <p className="p-4">Loading event...</p>
-        </main>
-      </div>
-    );
-  }
-
-  // --------------------------------
-  // Error while loading
-  // --------------------------------
-
-  if (error && !formData) {
-    return (
-      <div className="dashboard-layout">
-        <DashboardSidebar role="ORGANIZER" />
-
-        <main className="dashboard-content">
-          <div className="alert alert-danger">{error}</div>
-
-          <Link to="/organizer/events" className="btn btn-outline-primary">
-            Back to My Events
-          </Link>
+          <p className="p-4">Loading...</p>
         </main>
       </div>
     );
@@ -207,35 +142,31 @@ function EditEvent() {
 
   return (
     <div className="dashboard-layout">
-      <DashboardSidebar role="ORGANIZER" />
+      <DashboardSidebar />
 
       <main className="dashboard-content">
         <div className="dashboard-header">
-          <h1>Edit Event</h1>
-
-          <p>Update the details of your event.</p>
-        </div>
-
-        <div className="dashboard-section">
           <Link
-            to="/organizer/events"
-            className="btn btn-outline-secondary mb-4"
+            to={`/${role.toLowerCase()}/events`}
+            className="btn btn-outline-secondary mb-3"
           >
-            ← Back to My Events
+            ← Back to Events
           </Link>
 
-          {/* Error */}
+          <h1>Create Event</h1>
 
-          {error && <div className="alert alert-danger">{error}</div>}
+          <p>Provide the details for your new event.</p>
+        </div>
 
-          {/* Success */}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-          {success && (
-            <div className="alert alert-success">
-              Event updated successfully! Redirecting to dashboard...
-            </div>
-          )}
+        {success && (
+          <div className="alert alert-success">
+            Event created successfully! Redirecting to events...
+          </div>
+        )}
 
+        <div className="dashboard-section">
           <form onSubmit={handleSubmit}>
             {/* Title */}
 
@@ -281,15 +212,11 @@ function EditEvent() {
               >
                 <option value="">Select Category</option>
 
-                <option value="1">Technology</option>
-
-                <option value="2">Arts</option>
-
-                <option value="3">Business</option>
-
-                <option value="4">Wellness</option>
-
-                <option value="5">Entertainment</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -307,11 +234,12 @@ function EditEvent() {
               >
                 <option value="">Select Venue</option>
 
-                <option value="1">Seminar Hall</option>
-
-                <option value="2">Auditorium</option>
-
-                <option value="3">Computer Lab</option>
+                {venues.map((venue) => (
+                  <option key={venue.id} value={venue.id}>
+                    {venue.name}
+                    {venue.location ? ` — ${venue.location}` : ""}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -375,32 +303,34 @@ function EditEvent() {
                 placeholder="https://example.com/image.jpg"
               />
 
-              <div className="form-text">
-                Paste a publicly accessible image URL.
-              </div>
+              <small className="text-muted">
+                Optional. Enter a direct link to the event image.
+              </small>
             </div>
 
             {/* Visibility */}
 
             <div className="mb-4">
-              <label className="form-label">Visibility</label>
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="isPublic"
+                  name="isPublic"
+                  checked={formData.isPublic}
+                  onChange={handleChange}
+                />
 
-              <select
-                className="form-select"
-                name="isPublic"
-                value={formData.isPublic ? "true" : "false"}
-                onChange={handleVisibilityChange}
-              >
-                <option value="false">College Only</option>
-
-                <option value="true">Public</option>
-              </select>
+                <label className="form-check-label" htmlFor="isPublic">
+                  Public Event
+                </label>
+              </div>
             </div>
 
             {/* Submit */}
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? "Creating..." : "Create Event"}
             </button>
           </form>
         </div>
@@ -409,4 +339,4 @@ function EditEvent() {
   );
 }
 
-export default EditEvent;
+export default CreateEvent;

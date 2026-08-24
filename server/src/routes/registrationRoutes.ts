@@ -68,7 +68,7 @@ router.get(
 );
 
 router.get(
-  "/events/:eventId",
+  "/events/:eventId/registrations",
   authenticateToken,
   requireRole(
     UserRole.ORGANIZER,

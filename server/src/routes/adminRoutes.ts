@@ -3,7 +3,8 @@ import { Router } from "express";
 import {
   getAdminStatistics,
   getAdminUsers,
-  getAdminEvents
+  getAdminEvents,
+  updateUserRole
 } from "../controllers/adminController.js";
 
 import {
@@ -47,5 +48,11 @@ router.get(
   getAdminEvents
 );
 
+router.patch(
+  "/users/:id/role",
+  authenticateToken,
+  requireRole(UserRole.ADMIN),
+  updateUserRole
+);
 
 export default router;

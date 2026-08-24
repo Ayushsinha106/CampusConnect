@@ -8,20 +8,8 @@ export async function getEvents() {
   return events;
 }
 
-export async function getEventById(id) {
-  return events.find((event) => event.id === Number(id));
-}
-
-export async function getAdminDashboard() {
-  return adminData;
-}
-
 export async function getPendingEvents() {
   return adminData.pendingEvents;
-}
-
-export async function getAdminEvents() {
-  return adminData.events;
 }
 
 export async function getOrganizerDashboard() {
@@ -64,13 +52,18 @@ export async function getOrganizerEvents() {
 export async function getEventRegistrations(eventId) {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`http://localhost:5000/api/events/${eventId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `http://localhost:5000/api/registrations/events/${eventId}/registrations`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   const result = await response.json();
+
+  console.log("GET EVENT REGISTRATIONS RESPONSE:", result);
 
   if (!response.ok) {
     throw new Error(result.message || "Failed to fetch registrations");
@@ -109,4 +102,186 @@ export async function markAttendance(registrationId, attended) {
   }
 
   return result;
+}
+
+export async function getEventReviews(eventId) {
+  const response = await fetch(
+    `http://localhost:5000/api/reviews/events/${eventId}`,
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch reviews");
+  }
+
+  return {
+    reviews: result.data,
+    summary: result.summary,
+  };
+}
+
+export async function getAdminStatistics() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("http://localhost:5000/api/admin/statistics", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch admin statistics");
+  }
+
+  return result.data;
+}
+
+export async function getAdminUsers() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("http://localhost:5000/api/admin/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch admin users");
+  }
+
+  return result.data;
+}
+
+export async function getAdminEvents() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("http://localhost:5000/api/admin/events", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch admin events");
+  }
+
+  return result.data;
+}
+
+export async function updateUserRole(userId, role) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `http://localhost:5000/api/admin/users/${userId}/role`,
+    {
+      method: "PATCH",
+
+      headers: {
+        "Content-Type": "application/json",
+
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        role,
+      }),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to update user role");
+  }
+
+  return result.data;
+}
+
+export async function createEvent(eventData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("http://localhost:5000/api/events", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(eventData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to create event");
+  }
+
+  return result.data;
+}
+
+export async function getEventById(id) {
+  const response = await fetch(`http://localhost:5000/api/events/${id}`);
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch event");
+  }
+
+  return result.data;
+}
+
+export async function updateEvent(id, eventData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`http://localhost:5000/api/events/${id}`, {
+    method: "PATCH",
+
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(eventData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to update event");
+  }
+
+  return result.data;
+}
+
+export async function getCategories() {
+  const response = await fetch("http://localhost:5000/api/categories");
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch categories");
+  }
+
+  return result.data;
+}
+
+export async function getVenues() {
+  const response = await fetch("http://localhost:5000/api/venues");
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch venues");
+  }
+
+  return result.data;
 }

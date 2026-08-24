@@ -10,6 +10,8 @@ import registrationRoutes from "./routes/registrationRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import organizerRoutes from "./routes/organizerRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import venueRoutes from "./routes/venueRoutes.js";
 
 const app = express();
 
@@ -38,5 +40,7 @@ app.use("/api/registrations", registrationRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/organizer", organizerRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/venues", venueRoutes);
 
 export default app;

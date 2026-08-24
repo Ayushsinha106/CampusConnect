@@ -30,7 +30,7 @@ function Events() {
         }
 
         const result = await response.json();
-
+        console.log("Fetched Events:", result.data); // Log the data for debugging
         setEvents(result.data);
       } catch (err) {
         console.error(err);
@@ -62,6 +62,13 @@ function Events() {
   const filteredEvents = useMemo(() => {
     let result = [...events];
 
+    // Remove past events
+    const now = new Date();
+
+    result = result.filter((event) => {
+      return new Date(event.startDateTime) >= now;
+    });
+
     // Keyword search
     if (search.trim() !== "") {
       const keyword = search.toLowerCase();
@@ -89,11 +96,11 @@ function Events() {
     // Sorting
     result.sort((a, b) => {
       if (sortBy === "DATE_ASC") {
-        return new Date(a.startDate) - new Date(b.startDate);
+        return new Date(a.startDateTime) - new Date(b.startDateTime);
       }
 
       if (sortBy === "DATE_DESC") {
-        return new Date(b.startDate) - new Date(a.startDate);
+        return new Date(b.startDateTime) - new Date(a.startDateTime);
       }
 
       if (sortBy === "NAME_ASC") {

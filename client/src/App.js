@@ -12,16 +12,18 @@ import Profile from "./pages/Profile";
 
 import OrganizerDashboard from "./pages/organizer/OrganizerDashboard";
 import MyEvents from "./pages/organizer/MyEvents";
-import CreateEvent from "./pages/organizer/CreateEvent";
-import EditEvent from "./pages/organizer/EditEvent";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
 import EventRegistrations from "./pages/organizer/EventRegistrations";
 import Attendance from "./pages/organizer/Attendance";
 import Companions from "./pages/Companions";
 import Review from "./pages/Review";
+import EventReviews from "./pages/organizer/EventReviews";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import ManageEvents from "./pages/admin/ManageEvents";
 import PendingEvents from "./pages/admin/PendingEvents";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminEvents from "./pages/admin/AdminEvents";
 
 function App() {
   return (
@@ -40,8 +42,8 @@ function App() {
         {/* Organizer */}
         <Route path="/organizer" element={<OrganizerDashboard />} />
         <Route path="/organizer/events" element={<MyEvents />} />
-        <Route path="/organizer/events/create" element={<CreateEvent />} />
-        <Route path="/organizer/events/:id/edit" element={<EditEvent />} />
+        <Route path="/events/create" element={<CreateEvent />} />
+        <Route path="/events/:id/edit" element={<EditEvent />} />
         <Route
           path="/organizer/events/:id/attendance"
           element={<Attendance />}
@@ -54,11 +56,15 @@ function App() {
           path="/organizer/events/:eventId/registrations"
           element={<EventRegistrations />}
         />
+        <Route
+          path="/organizer/events/:eventId/reviews"
+          element={<EventReviews />}
+        />
 
         {/* Admin */}
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/events" element={<ManageEvents />} />
-        <Route path="/admin/events/pending" element={<PendingEvents />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/events" element={<AdminEvents />} />
       </Routes>
     </BrowserRouter>
   );
