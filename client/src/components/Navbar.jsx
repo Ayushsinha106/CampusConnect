@@ -33,8 +33,8 @@ function Navbar() {
               Login
             </Link>
 
-            <Link className="nav-link nav-item" to="/organizer">
-              Organizer
+            <Link className="nav-link nav-item" to="/events">
+              Events
             </Link>
 
             <Link className="nav-link nav-item" to="/profile">

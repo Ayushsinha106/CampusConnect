@@ -6,6 +6,7 @@ import {
   getMyProfile,
   updateMyProfile,
   getMyRegistrations,
+  getOrganizerEvents
 } from "../controllers/userController.js";
 
 import { authenticateToken } from "../middleware/authMiddleware.js";
@@ -31,6 +32,12 @@ router.get(
   "/me/registrations",
   authenticateToken,
   getMyRegistrations
+);
+
+router.get(
+  "/me/organizer-events",
+  authenticateToken,
+  getOrganizerEvents
 );
 
 export default router;

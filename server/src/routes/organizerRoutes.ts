@@ -23,7 +23,6 @@ router.get(
     "/events",
     authenticateToken,
     requireRole(UserRole.ORGANIZER),
-    requireRole(UserRole.ADMIN),
     getOrganizerEvents
 );
 

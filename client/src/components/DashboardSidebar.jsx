@@ -20,8 +20,6 @@ function DashboardSidebar({ role }) {
     <aside className="dashboard-sidebar">
       {/* Brand */}
       <div className="sidebar-brand">
-        <h4>CampusConnect</h4>
-
         <span>
           {isOrganizer ? "Organizer" : isAdmin ? "Administrator" : "Dashboard"}
         </span>

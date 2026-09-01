@@ -3,10 +3,14 @@ import bcrypt from "bcrypt";
 
 import AppDataSource from "../config/database.js";
 import { User } from "../entities/User.js";
+import { Event } from "../entities/Event.js";
 import type { AuthenticatedRequest } from "../middleware/authMiddleware.js";
-import { Registration } from "../entities/Registration.js";
 import { Companion } from "../entities/Companion.js";
 import { Review } from "../entities/Review.js";
+import {
+  Registration,
+  RegistrationStatus
+} from "../entities/Registration.js";
 
 export async function getUsers(
   _req: Request,
@@ -424,6 +428,162 @@ export async function getMyRegistrations(
       success: false,
       message:
         "Failed to fetch your registrations"
+    });
+  }
+}
+
+export async function getOrganizerEvents(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const organizerId =
+      req.user!.userId;
+
+    const eventRepository =
+      AppDataSource.getRepository(Event);
+
+    const registrationRepository =
+      AppDataSource.getRepository(
+        Registration
+      );
+
+    const companionRepository =
+      AppDataSource.getRepository(
+        Companion
+      );
+
+    const events =
+      await eventRepository.find({
+        where: {
+          organizerId
+        },
+
+        relations: {
+          category: true,
+          venue: true
+        },
+
+        order: {
+          startDateTime: "ASC"
+        }
+      });
+
+    const data = await Promise.all(
+      events.map(async (event) => {
+
+        const registrations =
+          await registrationRepository.find({
+            where: {
+              eventId: event.id,
+              status:
+                RegistrationStatus.CONFIRMED
+            }
+          });
+
+        const registeredCount =
+          registrations.length;
+
+        const registrationIds =
+          registrations.map(
+            (registration) =>
+              registration.id
+          );
+
+        let companionCount = 0;
+
+        if (registrationIds.length > 0) {
+          companionCount =
+            await companionRepository
+              .createQueryBuilder(
+                "companion"
+              )
+              .where(
+                "companion.registrationId IN (:...ids)",
+                {
+                  ids: registrationIds
+                }
+              )
+              .getCount();
+        }
+
+        const occupiedSeats =
+          registeredCount +
+          companionCount;
+
+        const availableSeats =
+          Math.max(
+            event.capacity -
+            occupiedSeats,
+            0
+          );
+
+        return {
+          id: event.id,
+
+          title:
+            event.title,
+
+          description:
+            event.description,
+
+          startDateTime:
+            event.startDateTime,
+
+          endDateTime:
+            event.endDateTime,
+
+          capacity:
+            event.capacity,
+
+          registeredCount,
+
+          companionCount,
+
+          occupiedSeats,
+
+          availableSeats,
+
+          imageUrl:
+            event.imageUrl,
+
+          isPublic:
+            event.isPublic,
+
+          category: {
+            id:
+              event.category.id,
+
+            name:
+              event.category.name
+          },
+
+          venue: {
+            id:
+              event.venue.id,
+
+            name:
+              event.venue.name,
+
+            location:
+              event.venue.location
+          }
+        };
+      })
+    );
+
+    res.json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch organizer events"
     });
   }
 }

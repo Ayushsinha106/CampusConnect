@@ -285,3 +285,24 @@ export async function getVenues() {
 
   return result.data;
 }
+
+export async function getOrganizerEventsProfile() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/users/me/organizer-events`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch organizer events");
+  }
+  console.log("Organizer Events:", result.data); // Log the data for debugging
+  return result.data;
+}

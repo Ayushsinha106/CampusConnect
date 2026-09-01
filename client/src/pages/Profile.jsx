@@ -21,6 +21,14 @@ function Profile() {
   const [registrationError, setRegistrationError] = useState("");
 
   // -------------------------
+  // Created Events state
+  // -------------------------
+
+  const [createdEvents, setCreatedEvents] = useState([]);
+  const [createdEventsLoading, setCreatedEventsLoading] = useState(true);
+  const [createdEventsError, setCreatedEventsError] = useState("");
+
+  // -------------------------
   // Fetch profile
   // -------------------------
 
@@ -99,6 +107,48 @@ function Profile() {
     };
 
     fetchRegistrations();
+  }, [navigate]);
+
+  // -------------------------
+  // Fetch created events
+  // -------------------------
+
+  useEffect(() => {
+    const fetchCreatedEvents = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
+        const response = await fetch(
+          "http://localhost:5000/api/users/me/organizer-events",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to fetch created events");
+        }
+
+        setCreatedEvents(result.data || []);
+      } catch (err) {
+        console.error(err);
+
+        setCreatedEventsError(err.message || "Unable to load created events");
+      } finally {
+        setCreatedEventsLoading(false);
+      }
+    };
+
+    fetchCreatedEvents();
   }, [navigate]);
 
   // -------------------------
@@ -391,6 +441,143 @@ function Profile() {
             })}
           </div>
         )}
+      </div>
+
+      {/* =========================
+    Events you Created
+    ========================= */}
+
+      <div className="mt-5">
+        <h2 className="mb-4">Events You Created</h2>
+
+        {/* Loading */}
+
+        {createdEventsLoading && (
+          <div className="text-center py-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+
+            <p className="mt-3">Loading your created events...</p>
+          </div>
+        )}
+
+        {/* Error */}
+
+        {createdEventsError && (
+          <div className="alert alert-danger">{createdEventsError}</div>
+        )}
+
+        {/* Empty */}
+
+        {!createdEventsLoading &&
+          !createdEventsError &&
+          createdEvents.length === 0 && (
+            <div className="alert alert-info">
+              You haven't created any events.
+            </div>
+          )}
+
+        {/* Events */}
+
+        {!createdEventsLoading &&
+          !createdEventsError &&
+          createdEvents.length > 0 && (
+            <div className="row g-4">
+              {createdEvents.map((event) => {
+                const eventEnded = new Date(event.endDateTime) < new Date();
+
+                return (
+                  <div className="col-12 col-md-6" key={event.id}>
+                    <div className="card h-100 shadow-sm">
+                      {/* Image */}
+
+                      {event.imageUrl && (
+                        <img
+                          src={event.imageUrl}
+                          alt={event.title}
+                          className="card-img-top"
+                          style={{
+                            height: "200px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      )}
+
+                      <div className="card-body">
+                        {/* Title */}
+
+                        <div className="d-flex justify-content-between align-items-start gap-2">
+                          <h5 className="card-title mb-2">{event.title}</h5>
+
+                          <span
+                            className={
+                              eventEnded
+                                ? "badge bg-secondary"
+                                : "badge bg-success"
+                            }
+                          >
+                            {eventEnded ? "Completed" : "Upcoming"}
+                          </span>
+                        </div>
+
+                        {/* Category */}
+
+                        <p className="text-muted mb-2">
+                          <strong>Category:</strong> {event.category?.name}
+                        </p>
+
+                        {/* Date */}
+
+                        <p className="text-muted mb-2">
+                          <strong>Date:</strong>{" "}
+                          {new Date(event.startDateTime).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )}
+                        </p>
+
+                        {/* Venue */}
+
+                        <p className="text-muted mb-2">
+                          <strong>Venue:</strong> {event.venue?.name}
+                        </p>
+
+                        {/* Seats */}
+
+                        <p className="mb-3">
+                          <strong>Seats:</strong> {event.occupiedSeats} /{" "}
+                          {event.capacity}
+                        </p>
+
+                        {/* Actions */}
+
+                        <div className="d-flex flex-wrap gap-2">
+                          <Link
+                            to={`/events/${event.id}`}
+                            className="btn btn-outline-primary"
+                          >
+                            View Event
+                          </Link>
+
+                          <Link
+                            to={`/events/${event.id}/edit`}
+                            className="btn btn-outline-secondary"
+                          >
+                            Edit Event
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
       </div>
     </div>
   );
