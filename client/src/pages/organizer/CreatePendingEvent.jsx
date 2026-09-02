@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import DashboardSidebar from "../components/DashboardSidebar";
+import DashboardSidebar from "../../components/DashboardSidebar";
 
-import { createEvent, getCategories, getVenues } from "../services/api";
+import {
+  createPendingEvent,
+  getCategories,
+  getVenues,
+} from "../../services/api";
 
 function CreateEvent() {
   const navigate = useNavigate();
@@ -107,18 +111,13 @@ function CreateEvent() {
         isPublic: formData.isPublic,
       };
 
-      await createEvent(data);
+      await createPendingEvent(data);
 
       setSuccess(true);
 
-      const role = JSON.parse(localStorage.getItem("user"))?.role;
       setTimeout(() => {
-        if (role === "ADMIN") {
-          navigate("/admin/events");
-        } else {
-          navigate("/organizer/events");
-        }
-      }, 1500);
+        navigate("/organizer/events");
+      }, 2000);
     } catch (err) {
       console.error(err);
 
@@ -131,7 +130,7 @@ function CreateEvent() {
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <DashboardSidebar role="ADMIN" />
+        <DashboardSidebar role="ORGANIZER" />
 
         <main className="dashboard-content">
           <p className="p-4">Loading...</p>
@@ -142,7 +141,7 @@ function CreateEvent() {
 
   return (
     <div className="dashboard-layout">
-      <DashboardSidebar role="ADMIN" />
+      <DashboardSidebar role="ORGANIZER" />
 
       <main className="dashboard-content">
         <div className="dashboard-header">
@@ -157,14 +156,6 @@ function CreateEvent() {
 
           <p>Provide the details for your new event.</p>
         </div>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-
-        {success && (
-          <div className="alert alert-success">
-            Event created successfully! Redirecting to events...
-          </div>
-        )}
 
         <div className="dashboard-section">
           <form onSubmit={handleSubmit}>
@@ -328,6 +319,14 @@ function CreateEvent() {
             </div>
 
             {/* Submit */}
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            {success && (
+              <div className="alert alert-success">
+                Event will be live after Admin approval! Redirecting to
+                events...
+              </div>
+            )}
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
               {saving ? "Creating..." : "Create Event"}

@@ -15,6 +15,7 @@ import {
 } from "../entities/Event.js";
 import { Companion } from "../entities/Companion.js";
 import { Review } from "../entities/Review.js";
+import { PendingEvent } from "../entities/PendingEvent.js";
 
 const AppDataSource = new DataSource({
   type: "postgres",
@@ -30,7 +31,7 @@ const AppDataSource = new DataSource({
 
   logging: false,
 
-  entities: [User, OrganizerRequest, Category, Venue, Event, Registration, Companion, Review]
+  entities: [User, OrganizerRequest, Category, Venue, Event, Registration, Companion, Review, PendingEvent],
 });
 
 export default AppDataSource;

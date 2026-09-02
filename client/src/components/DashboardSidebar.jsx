@@ -52,6 +52,15 @@ function DashboardSidebar({ role }) {
               <span>◫</span>
               My Events
             </Link>
+            <Link
+              className={`sidebar-link ${
+                isActive("/organizer/events/create") ? "active" : ""
+              }`}
+              to="/organizer/events/create"
+            >
+              <span>＋</span>
+              Create Event
+            </Link>
           </>
         )}
 
@@ -78,22 +87,28 @@ function DashboardSidebar({ role }) {
               <span>✓</span>
               Manage Users
             </Link>
+            <Link
+              to="/admin/manage"
+              className={`sidebar-link ${
+                location.pathname === "/admin/manage" ? "active" : ""
+              }`}
+            >
+              <span>©</span>
+              Manage Categories & Venues
+            </Link>
+            <Link
+              className={`sidebar-link ${
+                isActive("/events/create") ? "active" : ""
+              }`}
+              to="/events/create"
+            >
+              <span>＋</span>
+              Create Event
+            </Link>
           </>
         )}
 
         {/* Common Event Action */}
-
-        {(isOrganizer || isAdmin) && (
-          <Link
-            className={`sidebar-link ${
-              isActive("/events/create") ? "active" : ""
-            }`}
-            to="/events/create"
-          >
-            <span>＋</span>
-            Create Event
-          </Link>
-        )}
       </nav>
 
       {/* Footer */}

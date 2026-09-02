@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 import DashboardSidebar from "../../components/DashboardSidebar";
 
-import { getAdminEvents } from "../../services/api";
+import { getAdminEvents, deleteEvent } from "../../services/api";
 
 function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -11,6 +11,29 @@ function AdminEvents() {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
+
+  async function handleDeleteEvent(eventId, eventTitle) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${eventTitle}"?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteEvent(eventId);
+
+      // Remove deleted event from the current list
+      setEvents((previousEvents) =>
+        previousEvents.filter((event) => event.id !== eventId),
+      );
+    } catch (err) {
+      console.error(err);
+
+      alert(err.message || "Failed to delete event");
+    }
+  }
 
   useEffect(() => {
     async function loadEvents() {
@@ -118,6 +141,15 @@ function AdminEvents() {
                         >
                           Edit
                         </Link>
+
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() =>
+                            handleDeleteEvent(event.id, event.title)
+                          }
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}

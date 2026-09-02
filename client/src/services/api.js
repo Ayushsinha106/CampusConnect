@@ -306,3 +306,129 @@ export async function getOrganizerEventsProfile() {
   console.log("Organizer Events:", result.data); // Log the data for debugging
   return result.data;
 }
+
+export async function deleteEvent(id) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to delete event");
+  }
+
+  return result;
+}
+
+export async function createCategory(categoryData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/categories`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to create category");
+  }
+
+  return result.data;
+}
+
+export async function updateCategory(id, categoryData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to update category");
+  }
+
+  return result.data;
+}
+
+export async function createVenue(venueData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/venues`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(venueData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to create venue");
+  }
+
+  return result.data;
+}
+
+export async function updateVenue(id, venueData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/venues/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(venueData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to update venue");
+  }
+
+  return result.data;
+}
+
+export async function createPendingEvent(eventData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("http://localhost:5000/api/pending-events", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(eventData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to create event");
+  }
+
+  return result.data;
+}

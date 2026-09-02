@@ -19,11 +19,12 @@ import Attendance from "./pages/organizer/Attendance";
 import Companions from "./pages/Companions";
 import Review from "./pages/Review";
 import EventReviews from "./pages/organizer/EventReviews";
-
+import CreatePendingEvent from "./pages/organizer/CreatePendingEvent";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import PendingEvents from "./pages/admin/PendingEvents";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminEvents from "./pages/admin/AdminEvents";
+import AdminManage from "./pages/admin/AdminManage";
 
 function App() {
   return (
@@ -60,11 +61,16 @@ function App() {
           path="/organizer/events/:eventId/reviews"
           element={<EventReviews />}
         />
+        <Route
+          path="/organizer/events/create"
+          element={<CreatePendingEvent />}
+        />
 
         {/* Admin */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/events" element={<AdminEvents />} />
+        <Route path="/admin/manage" element={<AdminManage />} />
       </Routes>
     </BrowserRouter>
   );
