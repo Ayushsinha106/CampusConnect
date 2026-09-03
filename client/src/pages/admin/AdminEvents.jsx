@@ -44,7 +44,7 @@ function AdminEvents() {
         const data = await getAdminEvents();
 
         setEvents(data);
-        console.log("Fetched Admin Events:", data); // Log the data for debugging
+        console.log("Fetched Admin Events:", data);
       } catch (err) {
         console.error(err);
 

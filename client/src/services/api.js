@@ -1,10 +1,4 @@
-import events from "../data/events.json";
-
 const API_BASE_URL = "http://localhost:5000/api";
-
-export async function getEvents() {
-  return events;
-}
 
 export async function getOrganizerDashboard() {
   const token = localStorage.getItem("token");
@@ -47,7 +41,7 @@ export async function getEventRegistrations(eventId) {
   const token = localStorage.getItem("token");
 
   const response = await fetch(
-    `http://localhost:5000/api/registrations/events/${eventId}/registrations`,
+    `${API_BASE_URL}/registrations/events/${eventId}/registrations`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -480,6 +474,55 @@ export async function rejectPendingEvent(id) {
 
   if (!response.ok) {
     throw new Error(result.message || "Failed to reject event");
+  }
+
+  return result;
+}
+
+export async function getEvents({
+  search = "",
+  categoryId,
+  startDate,
+  endDate,
+  page = 1,
+  limit = 5,
+  sortBy = "startDateTime",
+  sortOrder = "asc",
+  isPublic,
+} = {}) {
+  const params = new URLSearchParams();
+
+  if (search.trim()) {
+    params.append("search", search.trim());
+  }
+
+  if (categoryId) {
+    params.append("categoryId", categoryId);
+  }
+
+  if (startDate) {
+    params.append("startDate", startDate);
+  }
+
+  if (endDate) {
+    params.append("endDate", endDate);
+  }
+
+  if (isPublic !== undefined) {
+    params.append("isPublic", isPublic);
+  }
+
+  params.append("page", page);
+  params.append("limit", limit);
+  params.append("sortBy", sortBy);
+  params.append("sortOrder", sortOrder);
+
+  const response = await fetch(`${API_BASE_URL}/events?${params.toString()}`);
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch events");
   }
 
   return result;

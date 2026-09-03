@@ -71,9 +71,7 @@ export class PendingEvent {
     isPublic!: boolean;
 
 
-    // -------------------------
     // Organizer
-    // -------------------------
 
     @ManyToOne(
         () => User,
@@ -90,9 +88,7 @@ export class PendingEvent {
     organizerId!: number;
 
 
-    // -------------------------
     // Category
-    // -------------------------
 
     @ManyToOne(
         () => Category,
@@ -111,9 +107,7 @@ export class PendingEvent {
     categoryId!: number;
 
 
-    // -------------------------
     // Venue
-    // -------------------------
 
     @ManyToOne(
         () => Venue,

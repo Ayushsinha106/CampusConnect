@@ -20,9 +20,7 @@ export async function register(
       password
     } = req.body;
 
-    // -------------------------
     // Validation
-    // -------------------------
 
     if (!name || !email || !password) {
       res.status(400).json({
@@ -44,9 +42,7 @@ export async function register(
       return;
     }
 
-    // -------------------------
     // Check existing user
-    // -------------------------
 
     const existingUser =
       await userRepository.findOne({
@@ -63,16 +59,12 @@ export async function register(
       return;
     }
 
-    // -------------------------
     // Hash password
-    // -------------------------
 
     const passwordHash =
       await bcrypt.hash(password, 10);
 
-    // -------------------------
     // Create user
-    // -------------------------
 
     const user =
       userRepository.create({
@@ -85,9 +77,7 @@ export async function register(
     const savedUser =
       await userRepository.save(user);
 
-    // -------------------------
     // Response
-    // -------------------------
 
     res.status(201).json({
       success: true,
@@ -121,9 +111,7 @@ export async function login(
       password
     } = req.body;
 
-    // -------------------------
     // Validation
-    // -------------------------
 
     if (!email || !password) {
       res.status(400).json({
@@ -135,9 +123,7 @@ export async function login(
       return;
     }
 
-    // -------------------------
     // Find user
-    // -------------------------
 
     const user =
       await userRepository.findOne({
@@ -154,9 +140,7 @@ export async function login(
       return;
     }
 
-    // -------------------------
     // Compare password
-    // -------------------------
 
     const passwordMatches =
       await bcrypt.compare(
@@ -174,9 +158,7 @@ export async function login(
       return;
     }
 
-    // -------------------------
     // JWT
-    // -------------------------
 
     const secret = process.env.JWT_SECRET;
 
@@ -196,9 +178,7 @@ export async function login(
       }
     );
 
-    // -------------------------
     // Response
-    // -------------------------
 
     res.status(200).json({
       success: true,

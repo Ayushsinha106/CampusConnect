@@ -50,9 +50,9 @@ import type {
 //     const numericRating =
 //       Number(rating);
 
-//     // -------------------------
+//  
 //     // Validate rating
-//     // -------------------------
+//  
 
 //     if (
 //       !Number.isInteger(numericRating) ||
@@ -68,9 +68,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Repositories
-//     // -------------------------
+//  
 
 //     const eventRepository =
 //       AppDataSource.getRepository(Event);
@@ -83,9 +83,9 @@ import type {
 //     const reviewRepository =
 //       AppDataSource.getRepository(Review);
 
-//     // -------------------------
+//  
 //     // Find event
-//     // -------------------------
+//  
 
 //     const event =
 //       await eventRepository.findOne({
@@ -103,9 +103,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Event must be finished
-//     // -------------------------
+//  
 
 //     if (
 //       event.endDateTime > new Date()
@@ -119,9 +119,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Check registration
-//     // -------------------------
+//  
 
 //     const registration =
 //       await registrationRepository.findOne({
@@ -142,9 +142,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Check registration status
-//     // -------------------------
+//  
 
 //     if (
 //       registration.status !==
@@ -159,9 +159,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Check attendance
-//     // -------------------------
+//  
 
 //     if (!registration.attended) {
 //       res.status(403).json({
@@ -173,9 +173,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Check existing review
-//     // -------------------------
+//  
 
 //     const existingReview =
 //       await reviewRepository.findOne({
@@ -196,9 +196,9 @@ import type {
 //       return;
 //     }
 
-//     // -------------------------
+//  
 //     // Create review
-//     // -------------------------
+//  
 
 //     const review =
 //       reviewRepository.create({
@@ -342,10 +342,10 @@ export async function getEventReviews(
       totalReviews === 0
         ? 0
         : reviews.reduce(
-            (sum, review) =>
-              sum + review.rating,
-            0
-          ) / totalReviews;
+          (sum, review) =>
+            sum + review.rating,
+          0
+        ) / totalReviews;
 
     res.json({
       success: true,
@@ -387,9 +387,7 @@ export async function createReview(
       comment
     } = req.body;
 
-    // -------------------------
     // Validate input
-    // -------------------------
 
     if (!eventId || !rating) {
       res.status(400).json({
@@ -430,9 +428,7 @@ export async function createReview(
       );
 
 
-    // -------------------------
     // Check registration
-    // -------------------------
 
     const registration =
       await registrationRepository.findOne({
@@ -455,9 +451,7 @@ export async function createReview(
     }
 
 
-    // -------------------------
     // Check attendance
-    // -------------------------
 
     if (!registration.attended) {
       res.status(403).json({
@@ -470,9 +464,7 @@ export async function createReview(
     }
 
 
-    // -------------------------
     // Check existing review
-    // -------------------------
 
     const existingReview =
       await reviewRepository.findOne({
@@ -493,9 +485,7 @@ export async function createReview(
     }
 
 
-    // -------------------------
     // Create review
-    // -------------------------
 
     const review =
       reviewRepository.create({

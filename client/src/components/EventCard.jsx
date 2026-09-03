@@ -16,12 +16,10 @@ function EventCard({ event }) {
             <span className="badge text-bg-primary">{event.category.name}</span>{" "}
             <span
               className={`badge ${
-                event.visibility === "PUBLIC"
-                  ? "text-bg-success"
-                  : "text-bg-secondary"
+                event.isPublic ? "text-bg-success" : "text-bg-secondary"
               }`}
             >
-              {event.visibility === "PUBLIC" ? "Public" : "College Only"}
+              {event.isPublic ? "Public" : "College Only"}
             </span>
           </div>
 

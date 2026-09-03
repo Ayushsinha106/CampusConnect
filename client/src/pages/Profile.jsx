@@ -5,33 +5,25 @@ import DashboardSidebar from "../components/DashboardSidebar";
 function Profile() {
   const navigate = useNavigate();
 
-  // -------------------------
   // Profile state
-  // -------------------------
 
   const [user, setUser] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
 
-  // -------------------------
   // Registration state
-  // -------------------------
 
   const [registrations, setRegistrations] = useState([]);
   const [registrationLoading, setRegistrationLoading] = useState(true);
   const [registrationError, setRegistrationError] = useState("");
 
-  // -------------------------
   // Created Events state
-  // -------------------------
 
   const [createdEvents, setCreatedEvents] = useState([]);
   const [createdEventsLoading, setCreatedEventsLoading] = useState(true);
   const [createdEventsError, setCreatedEventsError] = useState("");
 
-  // -------------------------
   // Fetch profile
-  // -------------------------
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -68,9 +60,7 @@ function Profile() {
     fetchProfile();
   }, [navigate]);
 
-  // -------------------------
   // Fetch registrations
-  // -------------------------
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -110,9 +100,7 @@ function Profile() {
     fetchRegistrations();
   }, [navigate]);
 
-  // -------------------------
   // Fetch created events
-  // -------------------------
 
   useEffect(() => {
     const fetchCreatedEvents = async () => {
@@ -152,9 +140,7 @@ function Profile() {
     fetchCreatedEvents();
   }, [navigate]);
 
-  // -------------------------
   // Logout
-  // -------------------------
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -163,9 +149,7 @@ function Profile() {
     navigate("/login");
   };
 
-  // -------------------------
   // Loading profile
-  // -------------------------
 
   if (profileLoading) {
     return (
@@ -179,9 +163,7 @@ function Profile() {
     );
   }
 
-  // -------------------------
   // Profile error
-  // -------------------------
 
   if (profileError) {
     return (
@@ -197,9 +179,7 @@ function Profile() {
 
   return (
     <div className="container py-5">
-      {/* =========================
-          Profile Information
-          ========================= */}
+      {/* Profile Information */}
 
       <div className="card shadow-sm mb-5">
         <div className="card-body p-4">
@@ -228,9 +208,7 @@ function Profile() {
         </div>
       </div>
 
-      {/* =========================
-          Registered Events
-          ========================= */}
+      {/* Registered Events */}
 
       <div>
         <h2 className="mb-4">My Registered Events</h2>
@@ -268,9 +246,7 @@ function Profile() {
             </div>
           )}
 
-        {/* =========================
-            Registration Cards
-            ========================= */}
+        {/* Registration Cards */}
 
         {!registrationLoading && registrations.length > 0 && (
           <div>
@@ -444,9 +420,7 @@ function Profile() {
         )}
       </div>
 
-      {/* =========================
-    Events you Created
-    ========================= */}
+      {/* Events you Created  */}
 
       <div className="mt-5">
         <h2 className="mb-4">Events You Created</h2>

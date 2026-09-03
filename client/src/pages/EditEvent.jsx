@@ -29,10 +29,7 @@ function EditEvent() {
   const [success, setSuccess] = useState(false);
   const role = JSON.parse(localStorage.getItem("user"))?.role;
 
-  // --------------------------------
   // Load event
-  // --------------------------------
-
   useEffect(() => {
     async function loadData() {
       try {
@@ -81,10 +78,7 @@ function EditEvent() {
     loadData();
   }, [id]);
 
-  // --------------------------------
   // Change
-  // --------------------------------
-
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
 
@@ -95,10 +89,7 @@ function EditEvent() {
     }));
   }
 
-  // --------------------------------
   // Submit
-  // --------------------------------
-
   async function handleSubmit(event) {
     event.preventDefault();
 

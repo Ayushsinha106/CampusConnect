@@ -38,10 +38,7 @@ function CreateEvent() {
 
   const role = JSON.parse(localStorage.getItem("user"))?.role;
 
-  // --------------------------------
   // Load categories and venues
-  // --------------------------------
-
   useEffect(() => {
     async function loadData() {
       try {
@@ -66,10 +63,7 @@ function CreateEvent() {
     loadData();
   }, []);
 
-  // --------------------------------
   // Form changes
-  // --------------------------------
-
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
 
@@ -80,9 +74,7 @@ function CreateEvent() {
     }));
   }
 
-  // --------------------------------
   // Submit
-  // --------------------------------
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -117,7 +109,7 @@ function CreateEvent() {
 
       setTimeout(() => {
         navigate("/organizer/events");
-      }, 2000);
+      }, 1500);
     } catch (err) {
       console.error(err);
 

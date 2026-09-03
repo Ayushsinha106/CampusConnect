@@ -49,9 +49,7 @@ export async function getAdminStatistics(
 
     const now = new Date();
 
-    // =====================================================
     // USER STATISTICS
-    // =====================================================
 
     const totalUsers =
       await userRepository.count();
@@ -78,9 +76,7 @@ export async function getAdminStatistics(
       });
 
 
-    // =====================================================
     // EVENT STATISTICS
-    // =====================================================
 
     const totalEvents =
       await eventRepository.count();
@@ -144,17 +140,13 @@ export async function getAdminStatistics(
       Number(capacityResult?.totalCapacity || 0);
 
 
-    // =====================================================
     // PENDING EVENT STATISTICS
-    // =====================================================
 
     const pendingEvents =
       await pendingEventRepository.count();
 
 
-    // =====================================================
     // REGISTRATION STATISTICS
-    // =====================================================
 
     const totalRegistrations =
       await registrationRepository.count();
@@ -194,9 +186,7 @@ export async function getAdminStatistics(
         );
 
 
-    // =====================================================
     // COMPANION STATISTICS
-    // =====================================================
 
     const totalCompanions =
       await companionRepository.count();
@@ -214,9 +204,7 @@ export async function getAdminStatistics(
     );
 
 
-    // =====================================================
     // REVIEW STATISTICS
-    // =====================================================
 
     const totalReviews =
       await reviewRepository.count();
@@ -273,9 +261,7 @@ export async function getAdminStatistics(
       });
 
 
-    // =====================================================
     // RESPONSE
-    // =====================================================
 
     res.json({
       success: true,

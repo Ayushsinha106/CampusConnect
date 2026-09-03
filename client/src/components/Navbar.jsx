@@ -19,7 +19,10 @@ function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div
+          className="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
           <div className="navbar-nav">
             <Link className="nav-link nav-item" to="/">
               Home

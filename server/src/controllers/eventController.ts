@@ -46,9 +46,7 @@ export async function createEvent(
       venueId
     } = req.body;
 
-    // -------------------------
     // Basic validation
-    // -------------------------
 
     if (
       !title ||
@@ -113,9 +111,7 @@ export async function createEvent(
       return;
     }
 
-    // -------------------------
     // Repositories
-    // -------------------------
 
     const eventRepository =
       AppDataSource.getRepository(Event);
@@ -129,9 +125,7 @@ export async function createEvent(
     const userRepository =
       AppDataSource.getRepository(User);
 
-    // -------------------------
     // Find organizer
-    // -------------------------
 
     const organizer =
       await userRepository.findOne({
@@ -149,9 +143,7 @@ export async function createEvent(
       return;
     }
 
-    // -------------------------
     // Find category
-    // -------------------------
 
     const category =
       await categoryRepository.findOne({
@@ -169,9 +161,7 @@ export async function createEvent(
       return;
     }
 
-    // -------------------------
     // Find venue
-    // -------------------------
 
     const venue =
       await venueRepository.findOne({
@@ -189,9 +179,7 @@ export async function createEvent(
       return;
     }
 
-    // -------------------------
     // Check venue capacity
-    // -------------------------
 
     if (
       venue.capacity !== null &&
@@ -206,9 +194,7 @@ export async function createEvent(
       return;
     }
 
-    // -------------------------
     // Create Event
-    // -------------------------
 
     const event =
       eventRepository.create({
@@ -239,9 +225,7 @@ export async function createEvent(
     const savedEvent =
       await eventRepository.save(event);
 
-    // -------------------------
     // Response
-    // -------------------------
 
     res.status(201).json({
       success: true,
@@ -298,9 +282,7 @@ export async function getEvents(
   res: Response
 ): Promise<void> {
   try {
-    // -------------------------
     // Query parameters
-    // -------------------------
 
     const search =
       typeof req.query.search === "string"
@@ -351,9 +333,7 @@ export async function getEvents(
         : "ASC";
 
 
-    // -------------------------
     // Validate category
-    // -------------------------
 
     if (
       categoryId !== undefined &&
@@ -369,9 +349,7 @@ export async function getEvents(
     }
 
 
-    // -------------------------
     // Validate sorting
-    // -------------------------
 
     const allowedSortFields = [
       "title",
@@ -386,9 +364,7 @@ export async function getEvents(
         : "startDateTime";
 
 
-    // -------------------------
     // Build query
-    // -------------------------
 
     const eventRepository =
       AppDataSource.getRepository(Event);
@@ -410,9 +386,7 @@ export async function getEvents(
         );
 
 
-    // -------------------------
     // Keyword search
-    // -------------------------
 
     if (search) {
       query.andWhere(
@@ -428,9 +402,7 @@ export async function getEvents(
     }
 
 
-    // -------------------------
     // Category filter
-    // -------------------------
 
     if (categoryId !== undefined) {
       query.andWhere(
@@ -442,9 +414,7 @@ export async function getEvents(
     }
 
 
-    // -------------------------
     // Date filters
-    // -------------------------
 
     if (startDate) {
       const start =
@@ -492,21 +462,23 @@ export async function getEvents(
     }
 
 
-    // -------------------------
     // Public visibility
-    // -------------------------
 
-    query.andWhere(
-      "event.isPublic = :isPublic",
-      {
-        isPublic: true
-      }
-    );
+    const isPublic =
+      req.query.isPublic !== undefined
+        ? req.query.isPublic === "true"
+        : undefined;
 
+    if (isPublic !== undefined) {
+      query.andWhere(
+        "event.isPublic = :isPublic",
+        {
+          isPublic
+        }
+      );
+    }
 
-    // -------------------------
     // Sorting
-    // -------------------------
 
     query.orderBy(
       `event.${safeSortBy}`,
@@ -514,9 +486,7 @@ export async function getEvents(
     );
 
 
-    // -------------------------
     // Pagination
-    // -------------------------
 
     const skip =
       (page - 1) * limit;
@@ -525,9 +495,7 @@ export async function getEvents(
     query.take(limit);
 
 
-    // -------------------------
     // Fetch events
-    // -------------------------
 
     const [
       events,
@@ -535,9 +503,7 @@ export async function getEvents(
     ] = await query.getManyAndCount();
 
 
-    // -------------------------
     // Availability
-    // -------------------------
 
     const registrationRepository =
       AppDataSource.getRepository(Registration);
@@ -1215,9 +1181,7 @@ export async function deleteEvent(
       return;
     }
 
-    // -------------------------
     // Ownership check
-    // -------------------------
 
     const isAdmin =
       req.user!.role === UserRole.ADMIN;

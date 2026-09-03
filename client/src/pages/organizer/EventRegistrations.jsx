@@ -18,9 +18,7 @@ function EventRegistrations() {
 
   const [updatingId, setUpdatingId] = useState(null);
 
-  // --------------------------------
   // Load registrations
-  // --------------------------------
 
   async function loadRegistrations() {
     try {
@@ -45,9 +43,7 @@ function EventRegistrations() {
     loadRegistrations();
   }, [eventId]);
 
-  // --------------------------------
   // Attendance
-  // --------------------------------
 
   async function handleAttendance(registrationId, attended) {
     try {
@@ -88,9 +84,7 @@ function EventRegistrations() {
     }
   }
 
-  // --------------------------------
   // Loading
-  // --------------------------------
 
   if (loading) {
     return (
@@ -104,9 +98,7 @@ function EventRegistrations() {
     );
   }
 
-  // --------------------------------
   // Error
-  // --------------------------------
 
   if (error) {
     return (

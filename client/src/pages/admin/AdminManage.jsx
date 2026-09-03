@@ -56,10 +56,7 @@ export default function AdminManage() {
     }
   }
 
-  // =========================
   // CATEGORY
-  // =========================
-
   function resetCategoryForm() {
     setCategoryName("");
     setCategoryDescription("");
@@ -118,10 +115,7 @@ export default function AdminManage() {
     }
   }
 
-  // =========================
   // VENUE
-  // =========================
-
   function resetVenueForm() {
     setVenueName("");
     setVenueLocation("");
@@ -260,10 +254,7 @@ export default function AdminManage() {
             </button>
           </div>
 
-          {/* ========================= */}
           {/* CATEGORIES */}
-          {/* ========================= */}
-
           {activeTab === "categories" && (
             <>
               <div className="card shadow-sm mb-4">
@@ -385,9 +376,7 @@ export default function AdminManage() {
             </>
           )}
 
-          {/* ========================= */}
           {/* VENUES */}
-          {/* ========================= */}
 
           {activeTab === "venues" && (
             <>

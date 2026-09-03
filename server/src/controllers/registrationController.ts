@@ -56,9 +56,9 @@ export async function registerForEvent(
       AppDataSource.getRepository(User);
 
 
-    // -------------------------
+
     // Find event
-    // -------------------------
+
 
     const event =
       await eventRepository.findOne({
@@ -77,9 +77,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Check event date
-    // -------------------------
+
 
     if (
       event.startDateTime <= new Date()
@@ -94,9 +94,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Find student
-    // -------------------------
+
 
     const student =
       await userRepository.findOne({
@@ -115,9 +115,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Make sure user is Student
-    // -------------------------
+
 
     if (
       student.role !== UserRole.STUDENT
@@ -132,9 +132,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Check existing registration
-    // -------------------------
+
 
     const existingRegistration =
       await registrationRepository.findOne({
@@ -192,9 +192,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Check current capacity
-    // -------------------------
+
 
     const confirmedCount =
       await registrationRepository.count({
@@ -218,9 +218,9 @@ export async function registerForEvent(
     }
 
 
-    // -------------------------
+
     // Create registration
-    // -------------------------
+
 
     const registration =
       registrationRepository.create({
@@ -471,9 +471,9 @@ export async function addCompanions(
 
     const { names } = req.body;
 
-    // -------------------------
+
     // Validate names
-    // -------------------------
+
 
     if (!Array.isArray(names)) {
       res.status(400).json({
@@ -532,9 +532,9 @@ export async function addCompanions(
       return;
     }
 
-    // -------------------------
+
     // Repositories
-    // -------------------------
+
 
     const registrationRepository =
       AppDataSource.getRepository(
@@ -566,9 +566,9 @@ export async function addCompanions(
       return;
     }
 
-    // -------------------------
+
     // Ownership
-    // -------------------------
+
 
     if (
       registration.studentId !==
@@ -583,9 +583,9 @@ export async function addCompanions(
       return;
     }
 
-    // -------------------------
+
     // Registration status
-    // -------------------------
+
 
     if (
       registration.status !==
@@ -600,9 +600,9 @@ export async function addCompanions(
       return;
     }
 
-    // -------------------------
+
     // Public event check
-    // -------------------------
+
 
     if (!registration.event.isPublic) {
       res.status(400).json({
@@ -614,9 +614,9 @@ export async function addCompanions(
       return;
     }
 
-    // -------------------------
+
     // Current companions
-    // -------------------------
+
 
     const currentCompanions =
       await companionRepository.count({
@@ -625,9 +625,9 @@ export async function addCompanions(
         }
       });
 
-    // -------------------------
+
     // Capacity check
-    // -------------------------
+
 
     const registrationRepository2 =
       AppDataSource.getRepository(
@@ -860,9 +860,9 @@ export async function getEventRegistrations(
     const registrationRepository =
       AppDataSource.getRepository(Registration);
 
-    // -------------------------
+
     // Find event
-    // -------------------------
+
 
     const event = await eventRepository.findOne({
       where: {
@@ -879,9 +879,9 @@ export async function getEventRegistrations(
       return;
     }
 
-    // -------------------------
+
     // Ownership check
-    // -------------------------
+
 
     const isAdmin =
       req.user!.role === UserRole.ADMIN;
@@ -899,9 +899,9 @@ export async function getEventRegistrations(
       return;
     }
 
-    // -------------------------
+
     // Fetch registrations
-    // -------------------------
+
 
     const registrations =
       await registrationRepository.find({
@@ -916,9 +916,9 @@ export async function getEventRegistrations(
         }
       });
 
-    // -------------------------
+
     // Fetch companions
-    // -------------------------
+
 
     const registrationIds =
       registrations.map(
@@ -950,9 +950,9 @@ export async function getEventRegistrations(
           .getMany();
     }
 
-    // -------------------------
+
     // Build response
-    // -------------------------
+
 
     const data =
       registrations.map(
@@ -998,9 +998,9 @@ export async function getEventRegistrations(
         }
       );
 
-    // -------------------------
+
     // Statistics
-    // -------------------------
+
 
     const confirmed =
       registrations.filter(
@@ -1129,9 +1129,9 @@ export async function markAttendance(
       return;
     }
 
-    // -------------------------
+
     // Only event owner/Admin
-    // -------------------------
+
 
     const isAdmin =
       req.user!.role === UserRole.ADMIN;
@@ -1150,9 +1150,9 @@ export async function markAttendance(
       return;
     }
 
-    // -------------------------
+
     // Cancelled registration
-    // -------------------------
+
 
     if (
       registration.status !==

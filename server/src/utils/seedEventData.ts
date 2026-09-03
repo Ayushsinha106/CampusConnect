@@ -23,9 +23,9 @@ async function seedEventData(): Promise<void> {
       AppDataSource.getRepository(Venue);
 
 
-    // -------------------------
+
     // Categories
-    // -------------------------
+
 
     const categories = [
       {
@@ -78,9 +78,9 @@ async function seedEventData(): Promise<void> {
     }
 
 
-    // -------------------------
+
     // Venues
-    // -------------------------
+
 
     const venues = [
       {

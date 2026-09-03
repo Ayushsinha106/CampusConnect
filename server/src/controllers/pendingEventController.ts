@@ -48,7 +48,7 @@ export async function createPendingEvent(
 
 
         // Basic validation
-        // -------------------------
+
 
         if (
             !title ||
@@ -113,9 +113,9 @@ export async function createPendingEvent(
             return;
         }
 
-        // -------------------------
+
         // Repositories
-        // -------------------------
+
 
         const eventRepository =
             AppDataSource.getRepository(PendingEvent);
@@ -129,9 +129,9 @@ export async function createPendingEvent(
         const userRepository =
             AppDataSource.getRepository(User);
 
-        // -------------------------
+
         // Find organizer
-        // -------------------------
+
 
         const organizer =
             await userRepository.findOne({
@@ -149,9 +149,9 @@ export async function createPendingEvent(
             return;
         }
 
-        // -------------------------
+
         // Find category
-        // -------------------------
+
 
         const category =
             await categoryRepository.findOne({
@@ -169,9 +169,9 @@ export async function createPendingEvent(
             return;
         }
 
-        // -------------------------
+
         // Find venue
-        // -------------------------
+
 
         const venue =
             await venueRepository.findOne({
@@ -189,9 +189,9 @@ export async function createPendingEvent(
             return;
         }
 
-        // -------------------------
+
         // Check venue capacity
-        // -------------------------
+
 
         if (
             venue.capacity !== null &&
@@ -206,9 +206,9 @@ export async function createPendingEvent(
             return;
         }
 
-        // -------------------------
+
         // Create Event
-        // -------------------------
+
 
         const event =
             eventRepository.create({
@@ -239,9 +239,9 @@ export async function createPendingEvent(
         const savedEvent =
             await eventRepository.save(event);
 
-        // -------------------------
+
         // Response
-        // -------------------------
+
 
         res.status(201).json({
             success: true,
@@ -530,9 +530,7 @@ export async function approvePendingEvent(
             return;
         }
 
-        // --------------------------------------------------
         // Make sure referenced records still exist
-        // --------------------------------------------------
 
         const userRepository =
             queryRunner.manager.getRepository(User);
@@ -591,9 +589,7 @@ export async function approvePendingEvent(
             return;
         }
 
-        // --------------------------------------------------
         // Check venue capacity again
-        // --------------------------------------------------
 
         if (
             venue.capacity !== null &&
@@ -609,9 +605,7 @@ export async function approvePendingEvent(
             return;
         }
 
-        // --------------------------------------------------
         // Create actual Event
-        // --------------------------------------------------
 
         const event = eventRepository.create({
             title: pendingEvent.title,
@@ -629,9 +623,7 @@ export async function approvePendingEvent(
 
         const savedEvent = await eventRepository.save(event);
 
-        // --------------------------------------------------
         // Remove PendingEvent
-        // --------------------------------------------------
 
         await pendingEventRepository.remove(pendingEvent);
 
