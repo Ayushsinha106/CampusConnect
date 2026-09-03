@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createPendingEvent, getPendingEvents, getPendingEventById, deletePendingEvent } from "../controllers/pendingEventController.js";
+import { createPendingEvent, getPendingEvents, getPendingEventById, approvePendingEvent, rejectPendingEvent } from "../controllers/pendingEventController.js";
 
 
 import {
@@ -51,14 +51,18 @@ router.post(
 
 
 
-router.delete(
-    "/:id",
+router.patch(
+    "/:id/approve",
     authenticateToken,
-    requireRole(
-        UserRole.ORGANIZER,
-        UserRole.ADMIN
-    ),
-    deletePendingEvent
+    requireRole(UserRole.ADMIN),
+    approvePendingEvent
+);
+
+router.patch(
+    "/:id/reject",
+    authenticateToken,
+    requireRole(UserRole.ADMIN),
+    rejectPendingEvent
 );
 
 export default router;

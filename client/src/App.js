@@ -21,10 +21,11 @@ import Review from "./pages/Review";
 import EventReviews from "./pages/organizer/EventReviews";
 import CreatePendingEvent from "./pages/organizer/CreatePendingEvent";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import PendingEvents from "./pages/admin/PendingEvents";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminEvents from "./pages/admin/AdminEvents";
 import AdminManage from "./pages/admin/AdminManage";
+import AdminEventApprovals from "./pages/admin/AdminEventApprovals";
+import AdminEventReviews from "./pages/admin/AdminEventReviews";
 
 function App() {
   return (
@@ -71,6 +72,14 @@ function App() {
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/manage" element={<AdminManage />} />
+        <Route
+          path="/admin/event-approvals"
+          element={<AdminEventApprovals />}
+        />
+        <Route
+          path="/admin/events/:eventId/reviews"
+          element={<AdminEventReviews />}
+        />
       </Routes>
     </BrowserRouter>
   );

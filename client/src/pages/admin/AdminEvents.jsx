@@ -102,6 +102,7 @@ function AdminEvents() {
                     <th>Capacity</th>
                     <th>Visibility</th>
                     <th>Actions</th>
+                    <th>Reviews</th>
                   </tr>
                 </thead>
 
@@ -150,6 +151,16 @@ function AdminEvents() {
                         >
                           Delete
                         </button>
+                      </td>
+                      <td>
+                        {new Date(event.endDateTime) < new Date() && (
+                          <Link
+                            className="btn btn-outline-secondary"
+                            to={`/admin/events/${event.id}/reviews`}
+                          >
+                            View Reviews
+                          </Link>
+                        )}
                       </td>
                     </tr>
                   ))}

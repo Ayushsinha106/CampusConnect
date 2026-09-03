@@ -1,15 +1,9 @@
 import events from "../data/events.json";
-import organizerData from "../data/organizerData.json";
-import adminData from "../data/adminData.json";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
 export async function getEvents() {
   return events;
-}
-
-export async function getPendingEvents() {
-  return adminData.pendingEvents;
 }
 
 export async function getOrganizerDashboard() {
@@ -131,6 +125,7 @@ export async function getAdminStatistics() {
   });
 
   const result = await response.json();
+  console.log("GET ADMIN STATISTICS RESPONSE:", result);
 
   if (!response.ok) {
     throw new Error(result.message || "Failed to fetch admin statistics");
@@ -431,4 +426,61 @@ export async function createPendingEvent(eventData) {
   }
 
   return result.data;
+}
+
+export async function getPendingEvents() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/pending-events`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+  console.log("GET PENDING EVENTS RESPONSE:", result);
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch pending events");
+  }
+
+  return result.data;
+}
+
+export async function approvePendingEvent(id) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/pending-events/${id}/approve`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to approve event");
+  }
+
+  return result.data;
+}
+
+export async function rejectPendingEvent(id) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/pending-events/${id}/reject`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to reject event");
+  }
+
+  return result;
 }

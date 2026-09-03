@@ -97,6 +97,15 @@ function DashboardSidebar({ role }) {
               Manage Categories & Venues
             </Link>
             <Link
+              to="/admin/event-approvals"
+              className={`sidebar-link ${
+                location.pathname === "/admin/event-approvals" ? "active" : ""
+              }`}
+            >
+              <span>‼</span>
+              Event Approvals
+            </Link>
+            <Link
               className={`sidebar-link ${
                 isActive("/events/create") ? "active" : ""
               }`}

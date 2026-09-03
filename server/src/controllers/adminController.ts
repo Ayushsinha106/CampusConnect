@@ -19,6 +19,9 @@ import {
 import type {
   AuthenticatedRequest
 } from "../middleware/authMiddleware.js";
+import { PendingEvent } from "../entities/PendingEvent.js";
+import { Review } from "../entities/Review.js";
+import { Companion } from "../entities/Companion.js";
 
 
 export async function getAdminStatistics(
@@ -32,14 +35,23 @@ export async function getAdminStatistics(
     const eventRepository =
       AppDataSource.getRepository(Event);
 
-    const registrationRepository =
-      AppDataSource.getRepository(
-        Registration
-      );
+    const pendingEventRepository =
+      AppDataSource.getRepository(PendingEvent);
 
-    // -------------------------
-    // User statistics
-    // -------------------------
+    const registrationRepository =
+      AppDataSource.getRepository(Registration);
+
+    const reviewRepository =
+      AppDataSource.getRepository(Review);
+
+    const companionRepository =
+      AppDataSource.getRepository(Companion);
+
+    const now = new Date();
+
+    // =====================================================
+    // USER STATISTICS
+    // =====================================================
 
     const totalUsers =
       await userRepository.count();
@@ -66,14 +78,12 @@ export async function getAdminStatistics(
       });
 
 
-    // -------------------------
-    // Event statistics
-    // -------------------------
+    // =====================================================
+    // EVENT STATISTICS
+    // =====================================================
 
     const totalEvents =
       await eventRepository.count();
-
-    const now = new Date();
 
     const upcomingEvents =
       await eventRepository
@@ -93,10 +103,58 @@ export async function getAdminStatistics(
         )
         .getCount();
 
+    const ongoingEvents =
+      await eventRepository
+        .createQueryBuilder("event")
+        .where(
+          "event.startDateTime <= :now",
+          { now }
+        )
+        .andWhere(
+          "event.endDateTime >= :now",
+          { now }
+        )
+        .getCount();
 
-    // -------------------------
-    // Registration statistics
-    // -------------------------
+    const publicEvents =
+      await eventRepository.count({
+        where: {
+          isPublic: true
+        }
+      });
+
+    const privateEvents =
+      await eventRepository.count({
+        where: {
+          isPublic: false
+        }
+      });
+
+    // Total capacity of all events
+    const capacityResult =
+      await eventRepository
+        .createQueryBuilder("event")
+        .select(
+          "COALESCE(SUM(event.capacity), 0)",
+          "totalCapacity"
+        )
+        .getRawOne();
+
+    const totalEventCapacity =
+      Number(capacityResult?.totalCapacity || 0);
+
+
+    // =====================================================
+    // PENDING EVENT STATISTICS
+    // =====================================================
+
+    const pendingEvents =
+      await pendingEventRepository.count();
+
+
+    // =====================================================
+    // REGISTRATION STATISTICS
+    // =====================================================
 
     const totalRegistrations =
       await registrationRepository.count();
@@ -104,34 +162,130 @@ export async function getAdminStatistics(
     const confirmedRegistrations =
       await registrationRepository.count({
         where: {
-          status:
-            RegistrationStatus.CONFIRMED
+          status: RegistrationStatus.CONFIRMED
         }
       });
 
     const cancelledRegistrations =
       await registrationRepository.count({
         where: {
-          status:
-            RegistrationStatus.CANCELLED
+          status: RegistrationStatus.CANCELLED
         }
       });
 
     const attendedRegistrations =
       await registrationRepository.count({
         where: {
-          status:
-            RegistrationStatus.CONFIRMED,
-
+          status: RegistrationStatus.CONFIRMED,
           attended: true
         }
       });
 
+    // Attendance percentage
+    const attendanceRate =
+      confirmedRegistrations === 0
+        ? 0
+        : Number(
+          (
+            (attendedRegistrations /
+              confirmedRegistrations) *
+            100
+          ).toFixed(2)
+        );
+
+
+    // =====================================================
+    // COMPANION STATISTICS
+    // =====================================================
+
+    const totalCompanions =
+      await companionRepository.count();
+
+    // Confirmed registrations + companions
+    // represent occupied seats
+    const totalOccupiedSeats =
+      confirmedRegistrations +
+      totalCompanions;
+
+    const availableSeats = Math.max(
+      totalEventCapacity -
+      totalOccupiedSeats,
+      0
+    );
+
+
+    // =====================================================
+    // REVIEW STATISTICS
+    // =====================================================
+
+    const totalReviews =
+      await reviewRepository.count();
+
+    const reviewAverageResult =
+      await reviewRepository
+        .createQueryBuilder("review")
+        .select(
+          "COALESCE(AVG(review.rating), 0)",
+          "averageRating"
+        )
+        .getRawOne();
+
+    const averageRating = Number(
+      Number(
+        reviewAverageResult?.averageRating || 0
+      ).toFixed(2)
+    );
+
+    // Rating distribution
+    const fiveStarReviews =
+      await reviewRepository.count({
+        where: {
+          rating: 5
+        }
+      });
+
+    const fourStarReviews =
+      await reviewRepository.count({
+        where: {
+          rating: 4
+        }
+      });
+
+    const threeStarReviews =
+      await reviewRepository.count({
+        where: {
+          rating: 3
+        }
+      });
+
+    const twoStarReviews =
+      await reviewRepository.count({
+        where: {
+          rating: 2
+        }
+      });
+
+    const oneStarReviews =
+      await reviewRepository.count({
+        where: {
+          rating: 1
+        }
+      });
+
+
+    // =====================================================
+    // RESPONSE
+    // =====================================================
 
     res.json({
       success: true,
 
       data: {
+
+        // -------------------------
+        // Users
+        // -------------------------
+
         users: {
           total: totalUsers,
           students: totalStudents,
@@ -139,26 +293,103 @@ export async function getAdminStatistics(
           admins: totalAdmins
         },
 
+
+        // -------------------------
+        // Events
+        // -------------------------
+
         events: {
           total: totalEvents,
           upcoming: upcomingEvents,
-          completed: completedEvents
+          ongoing: ongoingEvents,
+          completed: completedEvents,
+
+          public: publicEvents,
+          private: privateEvents,
+
+          totalCapacity: totalEventCapacity
         },
+
+
+        // -------------------------
+        // Pending Events
+        // -------------------------
+
+        pendingEvents: {
+          total: pendingEvents
+        },
+
+
+        // -------------------------
+        // Registrations
+        // -------------------------
 
         registrations: {
           total: totalRegistrations,
+
           confirmed:
             confirmedRegistrations,
+
           cancelled:
             cancelledRegistrations,
+
           attended:
-            attendedRegistrations
+            attendedRegistrations,
+
+          attendanceRate
+        },
+
+
+        // -------------------------
+        // Companions
+        // -------------------------
+
+        companions: {
+          total: totalCompanions,
+
+          occupiedSeats:
+            totalOccupiedSeats,
+
+          availableSeats
+        },
+
+
+        // -------------------------
+        // Reviews
+        // -------------------------
+
+        reviews: {
+          total: totalReviews,
+
+          averageRating,
+
+          distribution: {
+            fiveStars:
+              fiveStarReviews,
+
+            fourStars:
+              fourStarReviews,
+
+            threeStars:
+              threeStarReviews,
+
+            twoStars:
+              twoStarReviews,
+
+            oneStar:
+              oneStarReviews
+          }
         }
+
       }
     });
 
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "Get admin statistics error:",
+      error
+    );
 
     res.status(500).json({
       success: false,

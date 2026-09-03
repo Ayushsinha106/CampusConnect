@@ -3,7 +3,7 @@ import type { Response } from "express";
 import AppDataSource from "../config/database.js";
 
 import { PendingEvent } from "../entities/PendingEvent.js";
-
+import { Event } from "../entities/Event.js";
 import {
     Category
 } from "../entities/Category.js";
@@ -46,7 +46,7 @@ export async function createPendingEvent(
             venueId
         } = req.body;
 
-        // -------------------------
+
         // Basic validation
         // -------------------------
 
@@ -294,407 +294,39 @@ export async function createPendingEvent(
 }
 
 export async function getPendingEvents(
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
 ): Promise<void> {
     try {
-        // -------------------------
-        // Query parameters
-        // -------------------------
-
-        const search =
-            typeof req.query.search === "string"
-                ? req.query.search.trim()
-                : "";
-
-        const categoryId =
-            req.query.categoryId
-                ? Number(req.query.categoryId)
-                : undefined;
-
-        const startDate =
-            typeof req.query.startDate === "string"
-                ? req.query.startDate
-                : undefined;
-
-        const endDate =
-            typeof req.query.endDate === "string"
-                ? req.query.endDate
-                : undefined;
-
-        const availableOnly =
-            req.query.available === "true";
-
-        const page =
-            Math.max(
-                Number(req.query.page) || 1,
-                1
-            );
-
-        const limit =
-            Math.min(
-                Math.max(
-                    Number(req.query.limit) || 10,
-                    1
-                ),
-                50
-            );
-
-        const sortBy =
-            typeof req.query.sortBy === "string"
-                ? req.query.sortBy
-                : "startDateTime";
-
-        const sortOrder =
-            req.query.sortOrder === "desc"
-                ? "DESC"
-                : "ASC";
-
-
-        // -------------------------
-        // Validate category
-        // -------------------------
-
-        if (
-            categoryId !== undefined &&
-            (!Number.isInteger(categoryId) ||
-                categoryId <= 0)
-        ) {
-            res.status(400).json({
-                success: false,
-                message: "Invalid category ID"
-            });
-
-            return;
-        }
-
-
-        // -------------------------
-        // Validate sorting
-        // -------------------------
-
-        const allowedSortFields = [
-            "title",
-            "startDateTime",
-            "createdAt",
-            "capacity"
-        ];
-
-        const safeSortBy =
-            allowedSortFields.includes(sortBy)
-                ? sortBy
-                : "startDateTime";
-
-
-        // -------------------------
-        // Build query
-        // -------------------------
-
-        const eventRepository =
+        const pendingEventRepository =
             AppDataSource.getRepository(PendingEvent);
 
-        const query =
-            eventRepository
-                .createQueryBuilder("event")
-                .leftJoinAndSelect(
-                    "event.category",
-                    "category"
-                )
-                .leftJoinAndSelect(
-                    "event.venue",
-                    "venue"
-                )
-                .leftJoinAndSelect(
-                    "event.organizer",
-                    "organizer"
-                );
-
-
-        // -------------------------
-        // Keyword search
-        // -------------------------
-
-        if (search) {
-            query.andWhere(
-                `(
-          event.title ILIKE :search
-          OR event.description ILIKE :search
-          OR category.name ILIKE :search
-        )`,
-                {
-                    search: `%${search}%`
-                }
-            );
-        }
-
-
-        // -------------------------
-        // Category filter
-        // -------------------------
-
-        if (categoryId !== undefined) {
-            query.andWhere(
-                "event.categoryId = :categoryId",
-                {
-                    categoryId
-                }
-            );
-        }
-
-
-        // -------------------------
-        // Date filters
-        // -------------------------
-
-        if (startDate) {
-            const start =
-                new Date(startDate);
-
-            if (Number.isNaN(start.getTime())) {
-                res.status(400).json({
-                    success: false,
-                    message:
-                        "Invalid start date"
-                });
-
-                return;
-            }
-
-            query.andWhere(
-                "event.startDateTime >= :startDate",
-                {
-                    startDate: start
-                }
-            );
-        }
-
-
-        if (endDate) {
-            const end =
-                new Date(endDate);
-
-            if (Number.isNaN(end.getTime())) {
-                res.status(400).json({
-                    success: false,
-                    message:
-                        "Invalid end date"
-                });
-
-                return;
-            }
-
-            query.andWhere(
-                "event.startDateTime <= :endDate",
-                {
-                    endDate: end
-                }
-            );
-        }
-
-
-        // -------------------------
-        // Public visibility
-        // -------------------------
-
-        query.andWhere(
-            "event.isPublic = :isPublic",
-            {
-                isPublic: true
-            }
-        );
-
-
-        // -------------------------
-        // Sorting
-        // -------------------------
-
-        query.orderBy(
-            `event.${safeSortBy}`,
-            sortOrder
-        );
-
-
-        // -------------------------
-        // Pagination
-        // -------------------------
-
-        const skip =
-            (page - 1) * limit;
-
-        query.skip(skip);
-        query.take(limit);
-
-
-        // -------------------------
-        // Fetch events
-        // -------------------------
-
-        const [
-            events,
-            total
-        ] = await query.getManyAndCount();
-
-
-        // -------------------------
-        // Availability
-        // -------------------------
-
-        const registrationRepository =
-            AppDataSource.getRepository(Registration);
-
-        const companionRepository =
-            AppDataSource.getRepository(Companion);
-
-
-        let result = await Promise.all(
-            events.map(async (event) => {
-
-                // Get confirmed registrations
-                const registrations =
-                    await registrationRepository.find({
-                        where: {
-                            eventId: event.id,
-                            status: RegistrationStatus.CONFIRMED
-                        }
-                    });
-
-                const registeredCount =
-                    registrations.length;
-
-                // Get registration IDs
-                const registrationIds =
-                    registrations.map(
-                        (registration) =>
-                            registration.id
-                    );
-
-                // Count companions
-                let companionCount = 0;
-
-                if (registrationIds.length > 0) {
-                    companionCount =
-                        await companionRepository
-                            .createQueryBuilder("companion")
-                            .where(
-                                "companion.registrationId IN (:...ids)",
-                                {
-                                    ids: registrationIds
-                                }
-                            )
-                            .getCount();
-                }
-
-                const occupiedSeats =
-                    registeredCount +
-                    companionCount;
-
-                const availableSeats =
-                    Math.max(
-                        event.capacity -
-                        occupiedSeats,
-                        0
-                    );
-
-
-                return {
-                    id: event.id,
-
-                    title:
-                        event.title,
-
-                    description:
-                        event.description,
-
-                    startDateTime:
-                        event.startDateTime,
-
-                    endDateTime:
-                        event.endDateTime,
-
-                    capacity:
-                        event.capacity,
-
-                    // New fields
-                    registeredCount,
-
-                    companionCount,
-
-                    occupiedSeats,
-
-                    availableSeats,
-
-                    imageUrl:
-                        event.imageUrl,
-
-                    isPublic:
-                        event.isPublic,
-
-                    category: {
-                        id:
-                            event.category.id,
-
-                        name:
-                            event.category.name
-                    },
-
-                    venue: {
-                        id:
-                            event.venue.id,
-
-                        name:
-                            event.venue.name,
-
-                        location:
-                            event.venue.location
-                    },
-
-                    organizer: {
-                        id:
-                            event.organizer.id,
-
-                        name:
-                            event.organizer.name
-                    }
-                };
-            })
-        );
-
-
-        // Temporary availability calculation.
-        // Registration counts will replace this
-        // once we create the Registration entity.
-
-        if (availableOnly) {
-            result = result.filter(
-                (event) => event.capacity > 0
-            );
-        }
-
+        const pendingEvents = await pendingEventRepository.find({
+            relations: {
+                organizer: true,
+                category: true,
+                venue: true,
+            },
+            order: {
+                createdAt: "ASC",
+            },
+        });
 
         res.json({
             success: true,
-
-            data: result,
-
-            pagination: {
-                page,
-                limit,
-                total,
-                totalPages:
-                    Math.ceil(total / limit)
-            }
+            data: pendingEvents,
         });
-
     } catch (error) {
-        console.error(error);
+        console.error("Get pending events error:", error);
 
         res.status(500).json({
             success: false,
-            message:
-                "Failed to fetch events"
+            message: "Failed to fetch pending events",
         });
     }
 }
+
+
 
 export async function getPendingEventById(
     req: AuthenticatedRequest,
@@ -852,77 +484,227 @@ export async function getPendingEventById(
     }
 }
 
-export async function deletePendingEvent(
+
+// APPROVE PENDING EVENT
+
+
+export async function approvePendingEvent(
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> {
+    const queryRunner = AppDataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        const pendingEventId = Number(req.params.id);
+
+        if (Number.isNaN(pendingEventId)) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid pending event ID",
+            });
+            return;
+        }
+
+        const pendingEventRepository =
+            queryRunner.manager.getRepository(PendingEvent);
+
+        const eventRepository =
+            queryRunner.manager.getRepository(Event);
+
+        const pendingEvent = await pendingEventRepository.findOne({
+            where: {
+                id: pendingEventId,
+            },
+        });
+
+        if (!pendingEvent) {
+            await queryRunner.rollbackTransaction();
+
+            res.status(404).json({
+                success: false,
+                message: "Pending event not found",
+            });
+            return;
+        }
+
+        // --------------------------------------------------
+        // Make sure referenced records still exist
+        // --------------------------------------------------
+
+        const userRepository =
+            queryRunner.manager.getRepository(User);
+
+        const categoryRepository =
+            queryRunner.manager.getRepository(Category);
+
+        const venueRepository =
+            queryRunner.manager.getRepository(Venue);
+
+        const organizer = await userRepository.findOne({
+            where: {
+                id: pendingEvent.organizerId,
+            },
+        });
+
+        if (!organizer) {
+            await queryRunner.rollbackTransaction();
+
+            res.status(400).json({
+                success: false,
+                message: "Event organizer no longer exists",
+            });
+            return;
+        }
+
+        const category = await categoryRepository.findOne({
+            where: {
+                id: pendingEvent.categoryId,
+            },
+        });
+
+        if (!category) {
+            await queryRunner.rollbackTransaction();
+
+            res.status(400).json({
+                success: false,
+                message: "Event category no longer exists",
+            });
+            return;
+        }
+
+        const venue = await venueRepository.findOne({
+            where: {
+                id: pendingEvent.venueId,
+            },
+        });
+
+        if (!venue) {
+            await queryRunner.rollbackTransaction();
+
+            res.status(400).json({
+                success: false,
+                message: "Event venue no longer exists",
+            });
+            return;
+        }
+
+        // --------------------------------------------------
+        // Check venue capacity again
+        // --------------------------------------------------
+
+        if (
+            venue.capacity !== null &&
+            pendingEvent.capacity > venue.capacity
+        ) {
+            await queryRunner.rollbackTransaction();
+
+            res.status(400).json({
+                success: false,
+                message:
+                    "Event capacity exceeds the venue capacity",
+            });
+            return;
+        }
+
+        // --------------------------------------------------
+        // Create actual Event
+        // --------------------------------------------------
+
+        const event = eventRepository.create({
+            title: pendingEvent.title,
+            description: pendingEvent.description,
+            startDateTime: pendingEvent.startDateTime,
+            endDateTime: pendingEvent.endDateTime,
+            capacity: pendingEvent.capacity,
+            imageUrl: pendingEvent.imageUrl,
+            isPublic: pendingEvent.isPublic,
+
+            organizerId: pendingEvent.organizerId,
+            categoryId: pendingEvent.categoryId,
+            venueId: pendingEvent.venueId,
+        });
+
+        const savedEvent = await eventRepository.save(event);
+
+        // --------------------------------------------------
+        // Remove PendingEvent
+        // --------------------------------------------------
+
+        await pendingEventRepository.remove(pendingEvent);
+
+        await queryRunner.commitTransaction();
+
+        res.json({
+            success: true,
+            message: "Event approved successfully",
+            data: savedEvent,
+        });
+    } catch (error) {
+        await queryRunner.rollbackTransaction();
+
+        console.error("Approve pending event error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to approve event",
+        });
+    } finally {
+        await queryRunner.release();
+    }
+}
+
+
+
+// REJECT PENDING EVENT
+
+
+export async function rejectPendingEvent(
     req: AuthenticatedRequest,
     res: Response
 ): Promise<void> {
     try {
-        const eventId = Number(req.params.id);
+        const pendingEventId = Number(req.params.id);
 
-        if (!Number.isInteger(eventId) || eventId <= 0) {
+        if (Number.isNaN(pendingEventId)) {
             res.status(400).json({
                 success: false,
-                message: "Invalid event ID"
+                message: "Invalid pending event ID",
             });
-
             return;
         }
 
-        const eventRepository =
+        const pendingEventRepository =
             AppDataSource.getRepository(PendingEvent);
 
-        const event =
-            await eventRepository.findOne({
-                where: {
-                    id: eventId
-                }
-            });
+        const pendingEvent = await pendingEventRepository.findOne({
+            where: {
+                id: pendingEventId,
+            },
+        });
 
-        if (!event) {
+        if (!pendingEvent) {
             res.status(404).json({
                 success: false,
-                message: "Event not found"
+                message: "Pending event not found",
             });
-
             return;
         }
 
-        // -------------------------
-        // Ownership check
-        // -------------------------
-
-        const isAdmin =
-            req.user!.role === UserRole.ADMIN;
-
-        const isOwner =
-            event.organizerId ===
-            req.user!.userId;
-
-        if (!isAdmin && !isOwner) {
-            res.status(403).json({
-                success: false,
-                message:
-                    "You can only delete your own events"
-            });
-
-            return;
-        }
-
-        await eventRepository.remove(event);
+        await pendingEventRepository.remove(pendingEvent);
 
         res.json({
             success: true,
-            message:
-                "Event deleted successfully"
+            message: "Event rejected successfully",
         });
-
     } catch (error) {
-        console.error(error);
+        console.error("Reject pending event error:", error);
 
         res.status(500).json({
             success: false,
-            message:
-                "Failed to delete event"
+            message: "Failed to reject event",
         });
     }
 }
