@@ -19,7 +19,7 @@ async function createAdmin(): Promise<void> {
       AppDataSource.getRepository(User);
 
     const email =
-      "admin@campusconnect.local";
+      "admin@gmail.com";
 
     const existing =
       await userRepository.findOne({

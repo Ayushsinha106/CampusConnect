@@ -2,7 +2,6 @@ import "dotenv/config";
 
 import { DataSource } from "typeorm";
 import { User } from "../entities/User.js";
-import { OrganizerRequest } from "../entities/OrganizerRequest.js";
 import { Registration } from "../entities/Registration.js";
 import {
   Category
@@ -31,7 +30,7 @@ const AppDataSource = new DataSource({
 
   logging: false,
 
-  entities: [User, OrganizerRequest, Category, Venue, Event, Registration, Companion, Review, PendingEvent],
+  entities: [User , Category, Venue, Event, Registration, Companion, Review, PendingEvent],
 });
 
 export default AppDataSource;
