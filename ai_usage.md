@@ -103,7 +103,16 @@ AI was therefore used as a development assistant rather than as a replacement fo
 
 The project guidelines require the contribution to be calculated using component weights and, for partially assisted components, an approximate percentage of AI involvement.
 
-**Approximate AI contribution:** `[TBD.]`
+**Approximate AI contribution:** 
+`
+Frontend: (10)* 0.50[components] + (15)* 0.50[pages] + (5)* 0.50[services] + (5)* 0.50[Hooks] = 17.5%
+`
+`
+Backend: (10)* 0.50[Entities] + (15)* 0.50[Controller] + (5)* 0.50[Routes] + (5)* 0.50[Middlewares] + (5)* 1.0[Utils] = 21.5%
+`
+`
+Optional: 6* 0.50 (tsconfig file)= 3%
+`
 
 The percentage should be calculated from the actual components that received AI assistance. Partially assisted components should be counted proportionally rather than automatically being treated as completely AI-generated.
 
@@ -126,90 +135,129 @@ AI-generated suggestions were not treated as automatically correct. Development 
 The primary AI tool used during development was:
 
 - **ChatGPT**
+- **Copilot**
 
 AI assistance was used through conversational prompts for implementation discussions, debugging, code structure, and feature development.
 
+
 # Prompt History
 
-The project guidelines require a chronological prompt history containing the prompts used, relevant AI response excerpts or summaries, and an explanation of how the responses were understood or modified.
+This section contains a record of the prompts and AI-assisted discussions used during the development of the CampusConnect project. The conversations covered implementation, debugging, architecture decisions, API design, database design, and documentation.
 
-The following format can be used for each entry.
+---
 
-## Prompt History Entry Template
+## 1. TypeScript Configuration Debugging
 
 ### Module / Feature
-
-`[Feature or module name]`
+tsconfig.json
 
 ### Prompt Used
 
-`[Insert the actual prompt used during development.]`
+I was debugging TypeScript configuration and problems related to running the Express backend with TypeScript.
 
 ### AI Response Summary
 
-`[Briefly describe the relevant suggestion or code provided by the AI.]`
+The AI helped diagnose TypeScript configuration problems involving Node.js modules and the project's ESM setup.
+
+The discussion covered issues such as:
+
+- `module` and `moduleResolution`
+- NodeNext / ESM configuration
+- import paths
+- TypeScript compilation errors
+- `verbatimModuleSyntax`
+- running TypeScript directly during development
+- the relationship between `package.json` and `tsconfig.json`
+
+The backend was configured so that TypeScript could be executed correctly in the Node.js environment.
 
 ### My Understanding / Modification
 
-`[Explain what was understood, what was changed, and how the solution was adapted or tested.]`
+I learned that TypeScript's module configuration needs to match the Node.js module system being used.
 
-## Example Entries
+I also understood why local imports may need `.js` extensions when using the NodeNext/ESM configuration even though the source files themselves are `.ts`.
 
-### Event Management / API Integration
 
-**Prompt Used**
+---
 
-`[Insert the actual prompt used during development.]`
+### 2. Middlewares and Authentication
 
-**AI Response Summary**
+### Module / Feature
+Authorization and Authentication
 
-The AI suggested structuring the event API call around the fields expected by the backend and using the authenticated request when required.
+### Prompt Used
+I was implementing authentication and authorization middlewares for the backend.
 
-**My Understanding / Modification**
+### AI Response Summary
+The AI helped structure the authentication and authorization middlewares, explaining how to:
+- Extract and verify JWT tokens from requests. 
+- Check user roles for access control.
 
-I compared the suggestion with the existing backend controller and adjusted the request fields and authentication handling to match the actual API.
 
-### Event Filtering and Sorting
+### My Understanding / Modification
+I adapted the middleware to the CampusConnect requirements, ensuring that:
+- JWT tokens are correctly extracted from the `Authorization` header.
+- User roles are checked against the required roles for specific routes.
 
-**Prompt Used**
 
-`[Insert the actual prompt used during development.]`
+## 3. User Entity
 
-**AI Response Summary**
+### Module / Feature
+User Entity
 
-The AI reviewed the frontend filtering and sorting logic and explained how the backend API could perform search, filtering, sorting, and pagination through query parameters.
+### Prompt Used
 
-**My Understanding / Modification**
+I was implementing the User entity and user-related backend functionality.
 
-I changed the frontend to use backend query parameters instead of performing all filtering and sorting locally, and adjusted the API service function accordingly.
+### AI Response Summary
 
-### Event Approval Workflow
+The AI helped structure the TypeORM User entity and explained fields such as:
 
-**Prompt Used**
+- ID
+- name
+- email
+- password
+- role
+- etc
 
-`[Insert the actual prompt used during development.]`
+It also helped with the corresponding controller and API operations. After that I create other Entities based on this
 
-**AI Response Summary**
+### My Understanding / Modification
 
-The AI suggested a separate pending-event workflow where organizer-created events are stored for administrator approval before becoming regular events.
+I adapted the entity to the CampusConnect requirements and used roles to distinguish:
 
-**My Understanding / Modification**
+- Student
+- Organizer
+- Admin
 
-I adapted the workflow to the project's role system and database structure. Organizers submit events for approval, while administrators review and approve or reject them.
+---
 
-### Debugging
+## 4. Event Filtering and Sorting
 
-**Prompt Used**
+### Module / Feature
+Event filtering and sorting
 
-`[Insert the actual prompt used during development.]`
+### Prompt Used
 
-**AI Response Summary**
+> this is how my event filter works but the problem is that we don't have visibility in our result object we have isPublic I tried something and it works for Public event but it doesn't show anything for college only
 
-The AI helped analyze an error or unexpected behavior, identify the likely cause, and suggest a modification.
+### AI Response / Discussion
 
-**My Understanding / Modification**
+The AI reviewed the frontend filtering and identified that the frontend was already using `event.isPublic`, but that the backend response and visibility filtering needed to be considered. The discussion also identified that the frontend could not display college-only events if the backend was returning only public events.
 
-I tested the suggested change and modified the implementation where necessary to fit the existing codebase.
+### Modification / Outcome
+
+The event visibility logic was changed to distinguish between:
+
+- Public events → `isPublic = true`
+- College-only events → `isPublic = false`
+- All events → no visibility restriction
+
+Also we make the whole filtering and sorting logic on the backend so that the frontend can just display the results.
+
+
+
+---
 
 ## 7. Declaration
 
@@ -217,8 +265,3 @@ I declare that AI assistance was used during the development of the CampusConnec
 
 The AI was used as a supporting development tool, while the final implementation decisions, integration, testing, and project-specific modifications were carried out during the development process.
 
-The approximate contribution percentage will be determined using the component-weighting method specified in the project guidelines.
-
-## Reference
-
-This document follows the **AI Usage Quantification Guidelines for App Dev Lab Project**. The guidelines require students to identify AI-assisted components, estimate contribution using the provided component weights, and submit relevant chronological prompt history. They also explicitly state that prompt history should not be fabricated or unnecessarily r
